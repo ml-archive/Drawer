@@ -12,11 +12,13 @@
 		42321C002226973500CE1DCB /* Drawer.h in Headers */ = {isa = PBXBuildFile; fileRef = 42321BF22226973500CE1DCB /* Drawer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		42321C0B222697EA00CE1DCB /* TouchInterceptingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42321C0A222697EA00CE1DCB /* TouchInterceptingView.swift */; };
 		42321C0E2226982700CE1DCB /* UIView+Superview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42321C0D2226982700CE1DCB /* UIView+Superview.swift */; };
-		42321C152226987C00CE1DCB /* BottomDrawerCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42321C102226987C00CE1DCB /* BottomDrawerCoordinator.swift */; };
-		42321C162226987C00CE1DCB /* BottomDrawerProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42321C112226987C00CE1DCB /* BottomDrawerProtocols.swift */; };
-		42321C172226987C00CE1DCB /* BottomDrawerModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42321C122226987C00CE1DCB /* BottomDrawerModels.swift */; };
-		42321C182226987C00CE1DCB /* BottomDrawerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42321C132226987C00CE1DCB /* BottomDrawerViewController.swift */; };
-		42321C192226987C00CE1DCB /* BottomDrawerViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 42321C142226987C00CE1DCB /* BottomDrawerViewController.storyboard */; };
+		42321C152226987C00CE1DCB /* DrawerCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42321C102226987C00CE1DCB /* DrawerCoordinator.swift */; };
+		42321C162226987C00CE1DCB /* EmbeddableContentDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42321C112226987C00CE1DCB /* EmbeddableContentDelegate.swift */; };
+		42321C172226987C00CE1DCB /* DrawerModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42321C122226987C00CE1DCB /* DrawerModels.swift */; };
+		42321C182226987C00CE1DCB /* DrawerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42321C132226987C00CE1DCB /* DrawerViewController.swift */; };
+		42321C192226987C00CE1DCB /* DrawerViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 42321C142226987C00CE1DCB /* DrawerViewController.storyboard */; };
+		42321C1C2226A79F00CE1DCB /* Embeddable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42321C1B2226A79F00CE1DCB /* Embeddable.swift */; };
+		42321C1E2226A7ED00CE1DCB /* EmbeddedScrollable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42321C1D2226A7ED00CE1DCB /* EmbeddedScrollable.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,11 +40,13 @@
 		42321BFF2226973500CE1DCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		42321C0A222697EA00CE1DCB /* TouchInterceptingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchInterceptingView.swift; sourceTree = "<group>"; };
 		42321C0D2226982700CE1DCB /* UIView+Superview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Superview.swift"; sourceTree = "<group>"; };
-		42321C102226987C00CE1DCB /* BottomDrawerCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BottomDrawerCoordinator.swift; sourceTree = "<group>"; };
-		42321C112226987C00CE1DCB /* BottomDrawerProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BottomDrawerProtocols.swift; sourceTree = "<group>"; };
-		42321C122226987C00CE1DCB /* BottomDrawerModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BottomDrawerModels.swift; sourceTree = "<group>"; };
-		42321C132226987C00CE1DCB /* BottomDrawerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BottomDrawerViewController.swift; sourceTree = "<group>"; };
-		42321C142226987C00CE1DCB /* BottomDrawerViewController.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = BottomDrawerViewController.storyboard; sourceTree = "<group>"; };
+		42321C102226987C00CE1DCB /* DrawerCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawerCoordinator.swift; sourceTree = "<group>"; };
+		42321C112226987C00CE1DCB /* EmbeddableContentDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmbeddableContentDelegate.swift; sourceTree = "<group>"; };
+		42321C122226987C00CE1DCB /* DrawerModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawerModels.swift; sourceTree = "<group>"; };
+		42321C132226987C00CE1DCB /* DrawerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawerViewController.swift; sourceTree = "<group>"; };
+		42321C142226987C00CE1DCB /* DrawerViewController.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = DrawerViewController.storyboard; sourceTree = "<group>"; };
+		42321C1B2226A79F00CE1DCB /* Embeddable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Embeddable.swift; sourceTree = "<group>"; };
+		42321C1D2226A7ED00CE1DCB /* EmbeddedScrollable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddedScrollable.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,13 +126,23 @@
 		42321C0F2226984A00CE1DCB /* Drawer */ = {
 			isa = PBXGroup;
 			children = (
-				42321C102226987C00CE1DCB /* BottomDrawerCoordinator.swift */,
-				42321C122226987C00CE1DCB /* BottomDrawerModels.swift */,
-				42321C112226987C00CE1DCB /* BottomDrawerProtocols.swift */,
-				42321C142226987C00CE1DCB /* BottomDrawerViewController.storyboard */,
-				42321C132226987C00CE1DCB /* BottomDrawerViewController.swift */,
+				42321C102226987C00CE1DCB /* DrawerCoordinator.swift */,
+				42321C122226987C00CE1DCB /* DrawerModels.swift */,
+				42321C142226987C00CE1DCB /* DrawerViewController.storyboard */,
+				42321C132226987C00CE1DCB /* DrawerViewController.swift */,
+				42321C1F2226A80700CE1DCB /* Protocols */,
 			);
 			path = Drawer;
+			sourceTree = "<group>";
+		};
+		42321C1F2226A80700CE1DCB /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				42321C1B2226A79F00CE1DCB /* Embeddable.swift */,
+				42321C1D2226A7ED00CE1DCB /* EmbeddedScrollable.swift */,
+				42321C112226987C00CE1DCB /* EmbeddableContentDelegate.swift */,
+			);
+			path = Protocols;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -223,7 +237,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				42321C192226987C00CE1DCB /* BottomDrawerViewController.storyboard in Resources */,
+				42321C192226987C00CE1DCB /* DrawerViewController.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,11 +255,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				42321C1E2226A7ED00CE1DCB /* EmbeddedScrollable.swift in Sources */,
 				42321C0B222697EA00CE1DCB /* TouchInterceptingView.swift in Sources */,
-				42321C162226987C00CE1DCB /* BottomDrawerProtocols.swift in Sources */,
-				42321C182226987C00CE1DCB /* BottomDrawerViewController.swift in Sources */,
-				42321C152226987C00CE1DCB /* BottomDrawerCoordinator.swift in Sources */,
-				42321C172226987C00CE1DCB /* BottomDrawerModels.swift in Sources */,
+				42321C162226987C00CE1DCB /* EmbeddableContentDelegate.swift in Sources */,
+				42321C182226987C00CE1DCB /* DrawerViewController.swift in Sources */,
+				42321C152226987C00CE1DCB /* DrawerCoordinator.swift in Sources */,
+				42321C172226987C00CE1DCB /* DrawerModels.swift in Sources */,
+				42321C1C2226A79F00CE1DCB /* Embeddable.swift in Sources */,
 				42321C0E2226982700CE1DCB /* UIView+Superview.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

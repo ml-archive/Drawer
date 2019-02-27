@@ -8,32 +8,29 @@
 
 import UIKit
 
-class BottomDrawerViewController: UIViewController { //swiftlint:disable:this type_body_length
+class DrawerViewController: UIViewController { //swiftlint:disable:this type_body_length
     
     weak var contentViewController: (UIViewController & Embeddable)?
     weak var backgroundViewController: UIViewController?
     
     // MARK: Init
     
-    class func instantiate() -> BottomDrawerViewController {
-        let name = "\(BottomDrawerViewController.self)"
+    class func instantiate() -> DrawerViewController {
+        let name = "\(DrawerViewController.self)"
         let storyboard = UIStoryboard(name: name, bundle: nil)
         //swiftlint:disable:next force_cast
-        let vc = storyboard.instantiateViewController(withIdentifier: name) as! BottomDrawerViewController
+        let vc = storyboard.instantiateViewController(withIdentifier: name) as! DrawerViewController
         return vc
     }
     
     // MARK: Configuration
     
-    private var embedConfig: BottomDrawer.EmbeddableContentConfig! {
+    private var embedConfig: Drawer.ContentConfiguration! {
         didSet {
             //drawer heights
             ownMaxHeight = embedConfig.embeddedFullHeight
             ownMinHeight = embedConfig.embeddedMinimumHeight
             heightAnchorContent.constant = ownMaxHeight
-            
-            //drawer container interaction state
-            backgroundInteraction = embedConfig.backgroundInteraction
             
             //drawer state
             state = embedConfig.state
@@ -52,8 +49,8 @@ class BottomDrawerViewController: UIViewController { //swiftlint:disable:this ty
     // MARK: States
 
     private var isInitiated: Bool = false
-    private var state: BottomDrawer.DrawerState = .minimised
-    private var backgroundInteraction: BottomDrawer.DrawerContainerInteraction = .whenMinimised
+    private var state: Drawer.State = .minimised
+    private var backgroundInteraction: Drawer.ContainerInteraction = .whenMinimised
     
     // MARK: Drawer possible backgrounds
     
@@ -118,7 +115,7 @@ class BottomDrawerViewController: UIViewController { //swiftlint:disable:this ty
 
 // MARK: - Add Children -
 
-extension BottomDrawerViewController {
+extension DrawerViewController {
     
     /// Adds the Drawer(self) to the backgroundViewController
     private func addDrawerToBackground() {
@@ -190,7 +187,7 @@ extension BottomDrawerViewController {
 
 // MARK: - UIGestureRecognizer -
 
-extension BottomDrawerViewController {
+extension DrawerViewController {
     
     private func setupGestureRecognizers() {
         do {
@@ -227,13 +224,12 @@ extension BottomDrawerViewController {
             switch state {
             case .fullSize:
                 let progress = translation.y / (ownMaxHeight - ownMinHeight)
-                fractionComplete = progress > 1 ? 1 : progress
+                fractionComplete = progress > 1 ? 1 : (progress < 0 ? 0 : progress)
                 direction = twoDecimal(fractionComplete) >= twoDecimal(lastFractionComplete) ? .down : .up
                 updateInteractiveTransition(fractionComplete: fractionComplete)
             case .minimised:
                 let progress = translation.y / (ownMaxHeight - ownMinHeight) * -1
-                fractionComplete = progress > 1 ? 1 : progress
-                print(fractionComplete)
+                fractionComplete = progress > 1 ? 1 : (progress < 0 ? 0 : progress)
                 direction = twoDecimal(fractionComplete) >= twoDecimal(lastFractionComplete) ? .up : .down
                 updateInteractiveTransition(fractionComplete: fractionComplete)
             }
@@ -264,7 +260,7 @@ extension BottomDrawerViewController {
 
 // MARK: - Animations -
 
-extension BottomDrawerViewController {
+extension DrawerViewController {
     enum Direction {
         case up, down
     }
@@ -507,13 +503,13 @@ extension BottomDrawerViewController {
 
 // MARK: - EmbeddableContentDelegate
 
-extension BottomDrawerViewController: EmbeddableContentDelegate {
+extension DrawerViewController: EmbeddableContentDelegate {
     
     var maxAllowedHeight: CGFloat {
         return UIScreen.main.bounds.height
     }
     
-    func handleEmbeddedContentAction(_ action: BottomDrawer.EmbeddedAction) {
+    func handleEmbeddedContentAction(_ action: Drawer.EmbeddedAction) {
         
         switch action {
         case .layoutUpdated(config: let config):
@@ -524,7 +520,6 @@ extension BottomDrawerViewController: EmbeddableContentDelegate {
                 }
             }
             
-        //     case .requestBottomDistance(distance: _, info: _): break
         case .animateOverlay(isHidden: _): break
         case .changeState(let drawerState):
             switch drawerState {
@@ -542,7 +537,7 @@ extension BottomDrawerViewController: EmbeddableContentDelegate {
 
 // MARK: - UIGestureRecognizerDelegate
 
-extension BottomDrawerViewController: UIGestureRecognizerDelegate {
+extension DrawerViewController: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         guard let embeddedContentViewController = contentViewController else {
             return false
@@ -576,15 +571,11 @@ extension BottomDrawerViewController: UIGestureRecognizerDelegate {
 
 // MARK: - TouchPassingWindowDelegate
 
-extension BottomDrawerViewController: TouchPassingWindowDelegate {
+extension DrawerViewController: TouchPassingWindowDelegate {
     func windowShouldBlockAll() -> Bool {
         switch backgroundInteraction {
         case .whenMinimised:
             return false
-        case .always:
-            return false
-        case .never:
-            return true
         }
     }
     
@@ -602,7 +593,7 @@ extension BottomDrawerViewController: TouchPassingWindowDelegate {
 
 // MARK: - DrawerBackgroundType
 
-extension BottomDrawerViewController {
+extension DrawerViewController {
     
     enum DrawerBackgroundType {
         case clear
@@ -614,7 +605,7 @@ extension BottomDrawerViewController {
 
 // MARK: - CGFloat 2 decimal
 
-extension BottomDrawerViewController {
+extension DrawerViewController {
     
     func twoDecimal(_ value: CGFloat) -> CGFloat {
         return round(100*value)/100
