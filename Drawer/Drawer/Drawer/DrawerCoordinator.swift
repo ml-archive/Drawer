@@ -16,7 +16,7 @@ public class DrawerCoordinator {
     private let drawerBackgroundType: DrawerViewController.DrawerBackgroundType
     private let cornerRadius: CGFloat
     
-    init(contentViewController: UIViewController & Embeddable,
+    public init(contentViewController: UIViewController & Embeddable,
          backgroundViewController: UIViewController,
          drawerBackgroundType: DrawerViewController.DrawerBackgroundType,
          with cornerRadius: CGFloat? = 0) {
@@ -26,7 +26,7 @@ public class DrawerCoordinator {
         self.cornerRadius = cornerRadius ?? 0
     }
     
-    func start() {
+    public func start() {
         if backgroundViewController.children.contains(where: { $0 is DrawerViewController }) {
             assertionFailure("\(backgroundViewController) already contains a Drawer. Multiple drawers not supported.")
             return

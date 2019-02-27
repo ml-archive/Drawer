@@ -8,7 +8,7 @@
 
 import UIKit
 
-internal class DrawerViewController: UIViewController { //swiftlint:disable:this type_body_length
+public class DrawerViewController: UIViewController { //swiftlint:disable:this type_body_length
     
     weak var contentViewController: (UIViewController & Embeddable)?
     weak var backgroundViewController: UIViewController?
@@ -71,7 +71,7 @@ internal class DrawerViewController: UIViewController { //swiftlint:disable:this
     
     // MARK: - Init
     
-    override func viewDidLayoutSubviews() {
+    override public func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
         if ownMaxHeight > 0 && isInitiated == false {
@@ -505,11 +505,11 @@ extension DrawerViewController {
 
 extension DrawerViewController: EmbeddableContentDelegate {
     
-    var maxAllowedHeight: CGFloat {
+    public var maxAllowedHeight: CGFloat {
         return UIScreen.main.bounds.height
     }
     
-    func handleEmbeddedContentAction(_ action: Drawer.EmbeddedAction) {
+    public func handleEmbeddedContentAction(_ action: Drawer.EmbeddedAction) {
         
         switch action {
         case .layoutUpdated(config: let config):
@@ -537,7 +537,7 @@ extension DrawerViewController: EmbeddableContentDelegate {
 // MARK: - UIGestureRecognizerDelegate
 
 extension DrawerViewController: UIGestureRecognizerDelegate {
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         guard let embeddedContentViewController = contentViewController else {
             return false
         }
@@ -555,7 +555,7 @@ extension DrawerViewController: UIGestureRecognizerDelegate {
         return false
     }
     
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         if gestureRecognizer is UIScreenEdgePanGestureRecognizer {
             return false
         }
@@ -594,7 +594,7 @@ extension DrawerViewController: TouchPassingWindowDelegate {
 
 extension DrawerViewController {
     
-    enum DrawerBackgroundType {
+    public enum DrawerBackgroundType {
         case clear
         case withColor(UIColor)
         case withBlur(UIBlurEffect.Style)
