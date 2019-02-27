@@ -99,9 +99,8 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
     }
     
     private func roundCorners(with radius: CGFloat) {
-        contentViewController?.view.clipsToBounds = true
         contentViewController?.view.layer.cornerRadius = radius
-        
+
         let corners = UIRectCorner(arrayLiteral: .topLeft, .topRight)
         contentViewController?.view.layer.maskedCorners = CACornerMask(rawValue: corners.rawValue)
     }

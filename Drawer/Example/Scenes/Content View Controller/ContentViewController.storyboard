@@ -1,24 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13168.3" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13147.4"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--scene Name View Controller-->
+        <!--Content View Controller-->
         <scene sceneID="i0m-iF-p80">
             <objects>
-                <viewController storyboardIdentifier="ContentViewController" id="F2H-rH-Lsj" customClass="ContentViewController" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ContentViewController" id="F2H-rH-Lsj" customClass="ContentViewController" customModule="Example" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="2ev-QE-M02">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sQi-I8-BcB">
+                                <rect key="frame" x="260" y="35" width="100" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="100" id="FwJ-2r-wOs"/>
+                                    <constraint firstAttribute="height" constant="40" id="iub-VU-81R"/>
+                                </constraints>
+                                <state key="normal" title="Expand"/>
+                                <connections>
+                                    <action selector="expactTapped:" destination="F2H-rH-Lsj" eventType="touchUpInside" id="QQi-qv-hhK"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iHh-gK-Rag">
+                                <rect key="frame" x="260" y="35" width="100" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="100" id="H3g-zp-S7j"/>
+                                    <constraint firstAttribute="height" constant="40" id="wrp-YN-kgE"/>
+                                </constraints>
+                                <state key="normal" title="Collapse"/>
+                                <connections>
+                                    <action selector="collapseTapped:" destination="F2H-rH-Lsj" eventType="touchUpInside" id="EaR-v4-3IE"/>
+                                </connections>
+                            </button>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rmc-Pj-Vhw">
+                                <rect key="frame" x="0.0" y="90" width="375" height="577"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="iHh-gK-Rag" firstAttribute="bottom" secondItem="sQi-I8-BcB" secondAttribute="bottom" id="8IL-80-u9k"/>
+                            <constraint firstItem="rmc-Pj-Vhw" firstAttribute="leading" secondItem="Fhz-5B-qaF" secondAttribute="leading" id="Aro-5J-AN5"/>
+                            <constraint firstItem="rmc-Pj-Vhw" firstAttribute="top" secondItem="iHh-gK-Rag" secondAttribute="bottom" constant="15" id="Fvf-Dv-dJg"/>
+                            <constraint firstItem="Fhz-5B-qaF" firstAttribute="trailing" secondItem="rmc-Pj-Vhw" secondAttribute="trailing" id="QrU-OQ-uek"/>
+                            <constraint firstItem="Fhz-5B-qaF" firstAttribute="trailing" secondItem="sQi-I8-BcB" secondAttribute="trailing" constant="15" id="XL1-gf-KtQ"/>
+                            <constraint firstItem="iHh-gK-Rag" firstAttribute="leading" secondItem="sQi-I8-BcB" secondAttribute="leading" id="ZvV-YF-BOq"/>
+                            <constraint firstItem="iHh-gK-Rag" firstAttribute="top" secondItem="sQi-I8-BcB" secondAttribute="top" id="bE3-3x-0tX"/>
+                            <constraint firstAttribute="bottom" secondItem="rmc-Pj-Vhw" secondAttribute="bottom" id="cow-iC-6Vp"/>
+                            <constraint firstItem="iHh-gK-Rag" firstAttribute="trailing" secondItem="sQi-I8-BcB" secondAttribute="trailing" id="dul-2s-pun"/>
+                            <constraint firstItem="sQi-I8-BcB" firstAttribute="top" secondItem="Fhz-5B-qaF" secondAttribute="top" constant="15" id="hA8-ZS-WRx"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="Fhz-5B-qaF"/>
                     </view>
+                    <connections>
+                        <outlet property="collapseButton" destination="iHh-gK-Rag" id="Rvs-N6-fbb"/>
+                        <outlet property="expandButton" destination="sQi-I8-BcB" id="lLd-1b-dJs"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FyU-Lz-LgX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
