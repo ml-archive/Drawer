@@ -41,7 +41,7 @@ public enum Drawer {
         let state: Drawer.State
         let dismissCompleteCallback: (() -> Void)?
         
-        init(embeddedFullHeight: CGFloat,
+        public init(embeddedFullHeight: CGFloat,
              state: Drawer.State,
              embeddedMinimumHeight: CGFloat,
              dismissCompleteCallback: (() -> Void)? = nil) {

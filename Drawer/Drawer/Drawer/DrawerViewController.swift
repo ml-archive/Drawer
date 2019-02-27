@@ -509,9 +509,9 @@ extension DrawerViewController: EmbeddableContentDelegate {
         return UIScreen.main.bounds.height
     }
     
-    public func handleEmbeddedContentAction(_ action: Drawer.EmbeddedAction) {
+    public func handle(embeddedAction: Drawer.EmbeddedAction) {
         
-        switch action {
+        switch embeddedAction {
         case .layoutUpdated(config: let config):
             
             if embedConfig == nil {
