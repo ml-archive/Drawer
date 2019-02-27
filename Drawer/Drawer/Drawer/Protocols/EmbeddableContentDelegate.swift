@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-protocol EmbeddableContentDelegate: class {
+public protocol EmbeddableContentDelegate: class {
     func handleEmbeddedContentAction(_ action: Drawer.EmbeddedAction)
     var maxAllowedHeight: CGFloat { get }
 }

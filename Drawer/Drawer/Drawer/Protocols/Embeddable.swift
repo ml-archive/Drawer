@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 // A Protocol exposed to the Application
-protocol Embeddable where Self: UIViewController {
+public protocol Embeddable where Self: UIViewController {
     var embedDelegate: EmbeddableContentDelegate? { get set }
     func didChangeOpenState(to state: EmbeddableState)
     func adjustDrawer(with maxHeight: CGFloat, with minHeight: CGFloat)

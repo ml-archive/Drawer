@@ -19,11 +19,11 @@ public enum Drawer {
         case whenMinimised
     }
     
-    enum EmbeddedAction {
+    public enum EmbeddedAction {
         case layoutUpdated(config: Drawer.ContentConfiguration)
         case changeState(to: MovementState)
         
-        enum MovementState: Int {
+        public enum MovementState: Int {
             case minimise
             case fullScreen
             case dismiss
