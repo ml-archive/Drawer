@@ -13,16 +13,6 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
     weak var contentViewController: (UIViewController & Embeddable)?
     weak var backgroundViewController: UIViewController?
     
-    // MARK: Init
-    
-    class func instantiate() -> DrawerViewController {
-        let name = "\(DrawerViewController.self)"
-        let storyboard = UIStoryboard(name: name, bundle: nil)
-        //swiftlint:disable:next force_cast
-        let vc = storyboard.instantiateViewController(withIdentifier: name) as! DrawerViewController
-        return vc
-    }
-    
     // MARK: Configuration
     
     private var embedConfig: Drawer.ContentConfiguration! {
@@ -71,6 +61,11 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
     
     // MARK: - Init
     
+    public override func loadView() {
+        super.loadView()
+        self.view = TouchInterceptingView()
+    }
+
     override public func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
