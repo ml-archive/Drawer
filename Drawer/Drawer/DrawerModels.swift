@@ -8,20 +8,19 @@
 
 import UIKit
 
-enum Drawer {
+public enum Drawer {
     
-    enum State: Int {
+    public enum State: Int {
         case fullSize
         case minimised
     }
     
-    enum ContainerInteraction: Int {
+    internal enum ContainerInteraction: Int {
         case whenMinimised
     }
     
     enum EmbeddedAction {
         case layoutUpdated(config: Drawer.ContentConfiguration)
-        case animateOverlay(isHidden: Bool)
         case changeState(to: MovementState)
         
         enum MovementState: Int {
@@ -31,12 +30,12 @@ enum Drawer {
         }
     }
 
-    enum Status: Int {
+    internal enum Status: Int {
         case open
         case closed
     }
     
-    struct ContentConfiguration {
+    public struct ContentConfiguration {
         let embeddedFullHeight: CGFloat
         let embeddedMinimumHeight: CGFloat
         let state: Drawer.State

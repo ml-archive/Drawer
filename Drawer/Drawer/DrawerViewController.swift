@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DrawerViewController: UIViewController { //swiftlint:disable:this type_body_length
+internal class DrawerViewController: UIViewController { //swiftlint:disable:this type_body_length
     
     weak var contentViewController: (UIViewController & Embeddable)?
     weak var backgroundViewController: UIViewController?
@@ -520,7 +520,6 @@ extension DrawerViewController: EmbeddableContentDelegate {
                 }
             }
             
-        case .animateOverlay(isHidden: _): break
         case .changeState(let drawerState):
             switch drawerState {
             case .minimise:

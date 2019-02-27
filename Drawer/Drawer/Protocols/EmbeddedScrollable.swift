@@ -8,6 +8,7 @@
 
 import Foundation
 
+// A Protocol exposed to the Application
 protocol EmbeddedScrollable: Embeddable {
     var isScrolledToTop: Bool { get }
     func setScrollEnabled(_ enabled: Bool)

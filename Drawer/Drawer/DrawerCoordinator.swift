@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class DrawerCoordinator {
+public class DrawerCoordinator {
     
     private let backgroundViewController: UIViewController
     private let contentViewController: (UIViewController & Embeddable)
