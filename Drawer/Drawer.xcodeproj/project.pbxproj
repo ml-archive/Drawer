@@ -16,6 +16,7 @@
 		42321C162226987C00CE1DCB /* EmbeddableContentDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42321C112226987C00CE1DCB /* EmbeddableContentDelegate.swift */; };
 		42321C172226987C00CE1DCB /* DrawerModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42321C122226987C00CE1DCB /* DrawerModels.swift */; };
 		42321C182226987C00CE1DCB /* DrawerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42321C132226987C00CE1DCB /* DrawerViewController.swift */; };
+		42321C192226987C00CE1DCB /* DrawerViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 42321C142226987C00CE1DCB /* DrawerViewController.storyboard */; };
 		42321C1C2226A79F00CE1DCB /* Embeddable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42321C1B2226A79F00CE1DCB /* Embeddable.swift */; };
 		42321C1E2226A7ED00CE1DCB /* EmbeddedScrollable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42321C1D2226A7ED00CE1DCB /* EmbeddedScrollable.swift */; };
 /* End PBXBuildFile section */
@@ -43,6 +44,7 @@
 		42321C112226987C00CE1DCB /* EmbeddableContentDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmbeddableContentDelegate.swift; sourceTree = "<group>"; };
 		42321C122226987C00CE1DCB /* DrawerModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawerModels.swift; sourceTree = "<group>"; };
 		42321C132226987C00CE1DCB /* DrawerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DrawerViewController.swift; sourceTree = "<group>"; };
+		42321C142226987C00CE1DCB /* DrawerViewController.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = DrawerViewController.storyboard; sourceTree = "<group>"; };
 		42321C1B2226A79F00CE1DCB /* Embeddable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Embeddable.swift; sourceTree = "<group>"; };
 		42321C1D2226A7ED00CE1DCB /* EmbeddedScrollable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddedScrollable.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -126,6 +128,7 @@
 			children = (
 				42321C102226987C00CE1DCB /* DrawerCoordinator.swift */,
 				42321C122226987C00CE1DCB /* DrawerModels.swift */,
+				42321C142226987C00CE1DCB /* DrawerViewController.storyboard */,
 				42321C132226987C00CE1DCB /* DrawerViewController.swift */,
 				42321C1F2226A80700CE1DCB /* Protocols */,
 			);
@@ -234,6 +237,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				42321C192226987C00CE1DCB /* DrawerViewController.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
