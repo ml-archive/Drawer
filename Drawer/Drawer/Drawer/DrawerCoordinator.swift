@@ -32,7 +32,7 @@ public class DrawerCoordinator {
             return
         }
         
-        let drawerVC = DrawerViewController.instantiate()
+        let drawerVC = DrawerViewController()
         drawerVC.contentViewController = contentViewController
         drawerVC.backgroundViewController = backgroundViewController
         
