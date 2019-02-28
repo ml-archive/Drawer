@@ -15,6 +15,7 @@ class ContentViewController: UIViewController {
     
     @IBOutlet weak var expandButton: UIButton!
     @IBOutlet weak var collapseButton: UIButton!
+    @IBOutlet weak var titleLabel: UILabel!
     
     // MARK: - Properties
     
@@ -61,21 +62,28 @@ class ContentViewController: UIViewController {
 
 extension ContentViewController: Embeddable {
     func didChangeOpenState(to state: EmbeddableState) {
+        let titleScaleMax: CGFloat = 1.6
         switch state {
         case .miniScreen:
             collapseButton.alpha = 0
             expandButton.alpha = 1
+            titleLabel.transform = .identity
         case .fullScreen:
             collapseButton.alpha = 1
             expandButton.alpha = 0
+            titleLabel.transform = CGAffineTransform(scaleX: titleScaleMax, y: titleScaleMax).concatenating(CGAffineTransform(translationX: 8, y: 0))
         case .changing(let progress, let drawerState):
             switch drawerState {
             case .fullSize:
                 collapseButton.alpha = 1 - progress
                 expandButton.alpha = progress
+                titleLabel.transform = CGAffineTransform(scaleX: titleScaleMax - (titleScaleMax - 1)*progress,
+                                                          y: titleScaleMax - (titleScaleMax - 1)*progress).concatenating(CGAffineTransform(translationX: 8 - 8*progress, y: 0))
             case .minimised:
                 collapseButton.alpha = progress
                 expandButton.alpha = 1 - progress
+                titleLabel.transform = CGAffineTransform(scaleX: 1 + (titleScaleMax - 1)*progress,
+                                                          y: 1 + (titleScaleMax - 1)*progress).concatenating(CGAffineTransform(translationX: 8*progress, y: 0))
             }
         case .closed:
             break
@@ -83,8 +91,9 @@ extension ContentViewController: Embeddable {
     }
     
     func adjustDrawer(with maxHeight: CGFloat, with minHeight: CGFloat) {
-        let contentConfiguration = Drawer.ContentConfiguration(embeddedFullHeight: maxHeight,
-                                                               state: .fullSize,
+        let contentConfiguration = Drawer.ContentConfiguration(duration: 0.5,
+                                                               embeddedFullHeight: maxHeight,
+                                                               state: .minimised,
                                                                embeddedMinimumHeight: minHeight,
                                                                dismissCompleteCallback:
             { [weak self] in

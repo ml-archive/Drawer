@@ -47,18 +47,26 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gwp-AA-gUu">
+                                <rect key="frame" x="15" y="46" width="30" height="18"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="iHh-gK-Rag" firstAttribute="bottom" secondItem="sQi-I8-BcB" secondAttribute="bottom" id="8IL-80-u9k"/>
                             <constraint firstItem="rmc-Pj-Vhw" firstAttribute="leading" secondItem="Fhz-5B-qaF" secondAttribute="leading" id="Aro-5J-AN5"/>
                             <constraint firstItem="rmc-Pj-Vhw" firstAttribute="top" secondItem="iHh-gK-Rag" secondAttribute="bottom" constant="15" id="Fvf-Dv-dJg"/>
+                            <constraint firstItem="Gwp-AA-gUu" firstAttribute="centerY" secondItem="iHh-gK-Rag" secondAttribute="centerY" id="NlE-OF-z2Q"/>
                             <constraint firstItem="Fhz-5B-qaF" firstAttribute="trailing" secondItem="rmc-Pj-Vhw" secondAttribute="trailing" id="QrU-OQ-uek"/>
                             <constraint firstItem="Fhz-5B-qaF" firstAttribute="trailing" secondItem="sQi-I8-BcB" secondAttribute="trailing" constant="15" id="XL1-gf-KtQ"/>
                             <constraint firstItem="iHh-gK-Rag" firstAttribute="leading" secondItem="sQi-I8-BcB" secondAttribute="leading" id="ZvV-YF-BOq"/>
                             <constraint firstItem="iHh-gK-Rag" firstAttribute="top" secondItem="sQi-I8-BcB" secondAttribute="top" id="bE3-3x-0tX"/>
                             <constraint firstAttribute="bottom" secondItem="rmc-Pj-Vhw" secondAttribute="bottom" id="cow-iC-6Vp"/>
                             <constraint firstItem="iHh-gK-Rag" firstAttribute="trailing" secondItem="sQi-I8-BcB" secondAttribute="trailing" id="dul-2s-pun"/>
+                            <constraint firstItem="Gwp-AA-gUu" firstAttribute="leading" secondItem="Fhz-5B-qaF" secondAttribute="leading" constant="15" id="g3o-kZ-1YH"/>
                             <constraint firstItem="sQi-I8-BcB" firstAttribute="top" secondItem="Fhz-5B-qaF" secondAttribute="top" constant="15" id="hA8-ZS-WRx"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Fhz-5B-qaF"/>
@@ -66,6 +74,7 @@
                     <connections>
                         <outlet property="collapseButton" destination="iHh-gK-Rag" id="Rvs-N6-fbb"/>
                         <outlet property="expandButton" destination="sQi-I8-BcB" id="lLd-1b-dJs"/>
+                        <outlet property="titleLabel" destination="Gwp-AA-gUu" id="1RD-wO-55o"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FyU-Lz-LgX" userLabel="First Responder" sceneMemberID="firstResponder"/>

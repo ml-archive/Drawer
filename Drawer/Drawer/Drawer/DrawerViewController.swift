@@ -17,6 +17,8 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
     
     private var embedConfig: Drawer.ContentConfiguration! {
         didSet {
+            animationDuration = embedConfig.duration
+            
             //drawer heights
             ownMaxHeight = embedConfig.embeddedFullHeight
             ownMinHeight = embedConfig.embeddedMinimumHeight
@@ -51,7 +53,7 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
     
     // MARK: Slide Animation Properties
     
-    private let animationDuration: TimeInterval = 0.2
+    private var animationDuration: TimeInterval!
     private let damping: CGFloat = 0.85
     // direction represents scrolling direction of the view
     private var direction: Direction!
@@ -219,32 +221,35 @@ extension DrawerViewController {
             case .fullSize:
                 let progress = translation.y / (ownMaxHeight - ownMinHeight)
                 fractionComplete = progress > 1 ? 1 : (progress < 0 ? 0 : progress)
-                direction = twoDecimal(fractionComplete) >= twoDecimal(lastFractionComplete) ? .down : .up
+                direction = fourDecimal(fractionComplete) >= fourDecimal(lastFractionComplete) ? .down : .up
                 updateInteractiveTransition(fractionComplete: fractionComplete)
             case .minimised:
                 let progress = translation.y / (ownMaxHeight - ownMinHeight) * -1
                 fractionComplete = progress > 1 ? 1 : (progress < 0 ? 0 : progress)
-                direction = twoDecimal(fractionComplete) >= twoDecimal(lastFractionComplete) ? .up : .down
+                direction = fourDecimal(fractionComplete) >= fourDecimal(lastFractionComplete) ? .up : .down
                 updateInteractiveTransition(fractionComplete: fractionComplete)
             }
             
             contentViewController?.didChangeOpenState(to: .changing(progress: fractionComplete, state: state))
             
         case .ended:
+            NSLog("ended state \(state) and direction \(direction)")
             if state == .fullSize && direction == .down || state == .minimised && direction == .up {
-                continueInteractiveTransition(cancel: false)
+                continueInteractiveTransition(isReversed: false)
             } else {
-                runningAnimators.forEach { animation in
-                    animation.stopAnimation(true)
-                }
-                switch direction {
-                case .up?:
-                    openDrawer()
-                case .down?:
-                    closeDrawer()
-                default: break
-                }
-                runningAnimators.removeAll()
+                NSLog("revesing")
+                continueInteractiveTransition(isReversed: true)
+//                runningAnimators.forEach { animation in
+//                    animation.stopAnimation(true)
+//                }
+//                switch direction {
+//                case .up?:
+//                    openDrawer()
+//                case .down?:
+//                    closeDrawer()
+//                default: break
+//                }
+//                runningAnimators.removeAll()
             }
         default: break
         }
@@ -363,9 +368,10 @@ extension DrawerViewController {
         })
     }
     
-    private func continueInteractiveTransition(cancel: Bool) {
-        let timining = UICubicTimingParameters(animationCurve: .easeIn)
+    private func continueInteractiveTransition(isReversed: Bool) {
+        let timining = UICubicTimingParameters(animationCurve: .linear)
         runningAnimators.forEach({ animator in
+            animator.isReversed = isReversed
             animator.continueAnimation(withTimingParameters: timining, durationFactor: 0)
         })
     }
@@ -600,8 +606,8 @@ extension DrawerViewController {
 
 extension DrawerViewController {
     
-    func twoDecimal(_ value: CGFloat) -> CGFloat {
-        return round(100*value)/100
+    func fourDecimal(_ value: CGFloat) -> CGFloat {
+        return round(10000*value)/10000
     }
     
 }//swiftlint:disable:this file_length

@@ -30,21 +30,19 @@ public enum Drawer {
         }
     }
 
-    internal enum Status: Int {
-        case open
-        case closed
-    }
-    
     public struct ContentConfiguration {
+        let duration: TimeInterval
         let embeddedFullHeight: CGFloat
         let embeddedMinimumHeight: CGFloat
         let state: Drawer.State
         let dismissCompleteCallback: (() -> Void)?
         
-        public init(embeddedFullHeight: CGFloat,
-             state: Drawer.State,
-             embeddedMinimumHeight: CGFloat,
-             dismissCompleteCallback: (() -> Void)? = nil) {
+        public init(duration: TimeInterval,
+                    embeddedFullHeight: CGFloat,
+                    state: Drawer.State,
+                    embeddedMinimumHeight: CGFloat,
+                    dismissCompleteCallback: (() -> Void)? = nil) {
+            self.duration = duration
             self.embeddedMinimumHeight = embeddedMinimumHeight
             self.embeddedFullHeight = embeddedFullHeight
             self.state = state
