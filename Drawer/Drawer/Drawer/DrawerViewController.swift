@@ -250,6 +250,7 @@ extension DrawerViewController {
                     case .down?:
                         if runningAnimators[0].isReversed {
                             runningAnimators.forEach { $0.isReversed = !$0.isReversed } // will Cancel reverse
+                            contentViewController?.willChangeState(to: .minimised)
                         }
                     default: break
                     }
@@ -258,6 +259,7 @@ extension DrawerViewController {
                     case .up?:
                         if runningAnimators[0].isReversed {
                             runningAnimators.forEach { $0.isReversed = !$0.isReversed } //will Cancel reverse
+                            contentViewController?.willChangeState(to: .fullSize)
                         }
                     default: break
                     }
@@ -270,6 +272,7 @@ extension DrawerViewController {
                     case .up?:
                         if !runningAnimators[0].isReversed {
                             runningAnimators.forEach { $0.isReversed = !$0.isReversed } //will reverse
+                            contentViewController?.willChangeState(to: .fullSize)
                         }
                     default: break
                     }
@@ -278,6 +281,7 @@ extension DrawerViewController {
                     case .down?:
                         if !runningAnimators[0].isReversed {
                             runningAnimators.forEach { $0.isReversed = !$0.isReversed } //will reverse
+                            contentViewController?.willChangeState(to: .minimised)
                         }
                     default: break
                     }
@@ -430,7 +434,6 @@ extension DrawerViewController {
     /// Initiate transition if not already running
     private func animateTransitionIfNeeded(duration: TimeInterval) {
         guard runningAnimators.isEmpty else {
-            NSLog("already running animators")
             direction.reversed()
             return
         }
@@ -444,7 +447,6 @@ extension DrawerViewController {
         let animator = UIViewPropertyAnimator(duration: duration, dampingRatio: 1)
         
         animator.addAnimations {
-            NSLog("animations \(self.state)")
             switch self.state {
             case .fullSize:
                 self.contentViewController?.willChangeState(to: .minimised)
@@ -457,7 +459,6 @@ extension DrawerViewController {
         }
         
         animator.addCompletion { _ in
-//            NSLog("completion \(self.direction) and state \(self.state)")
             switch self.direction {
             case .down?:
                 self.closeDrawer(animated: self.state == .minimised)
@@ -475,37 +476,16 @@ extension DrawerViewController {
         runningAnimators.append(animator)
         
         // BLUR Animation
-        let timing: UITimingCurveProvider
-        switch state {
-        case .fullSize:
-            timing = UICubicTimingParameters(controlPoint1: CGPoint(x: 0.75, y: 0.1),
-                                             controlPoint2: CGPoint(x: 0.9, y: 0.25))
-        case .minimised:
-            timing = UICubicTimingParameters(controlPoint1: CGPoint(x: 0.1, y: 0.75),
-                                             controlPoint2: CGPoint(x: 0.25, y: 0.9))
-        }
-        let backgroundAnimator = UIViewPropertyAnimator(duration: duration, timingParameters: timing)
-        backgroundAnimator.scrubsLinearly = false
+        let backgroundAnimator = UIViewPropertyAnimator(duration: duration, dampingRatio: damping)
         backgroundAnimator.addAnimations {
             switch self.state {
             case .fullSize:
-                switch self.backgroundType {
-                case .withBlur?:
-                    self.backgroundBlurEffectView?.effect = nil
-                case .withColor(let color)?:
-                    self.backgroundColorView?.backgroundColor = color.withAlphaComponent(0)
-                default: break
-                }
+                self.handleCloseBackgroundAnimation()
             case .minimised:
-                switch self.backgroundType {
-                case .withBlur(let style)?:
-                    self.backgroundBlurEffectView?.effect = UIBlurEffect(style: style)
-                case .withColor(let color)?:
-                    self.backgroundColorView?.backgroundColor = color
-                default: break
-                }
+                self.handleOpenBackgroundAnimation()
             }
         }
+
         backgroundAnimator.startAnimation()
         runningAnimators.append(backgroundAnimator)
     }
