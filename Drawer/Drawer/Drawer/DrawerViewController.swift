@@ -23,6 +23,7 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
             ownMaxHeight = embedConfig.embeddedFullHeight
             ownMinHeight = embedConfig.embeddedMinimumHeight
             heightAnchorContent.constant = ownMaxHeight
+            cornerRadius = embedConfig.cornerRadius
             
             //drawer state
             state = embedConfig.state
@@ -37,6 +38,7 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
     private var bottomAnchorContent: NSLayoutConstraint!
     private var ownMaxHeight: CGFloat = 0
     private var ownMinHeight: CGFloat = 0
+    private var cornerRadius: Drawer.ContentConfiguration.CornerRadius!
     
     // MARK: States
     
@@ -79,7 +81,7 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
         
     }
     
-    func makeViews(with backgroundType: DrawerBackgroundType, with cornerRadius: CGFloat) {
+    func makeViews(with backgroundType: DrawerBackgroundType) {
         self.backgroundType = backgroundType
         view.backgroundColor = .clear
         
@@ -94,15 +96,12 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
         addContentToDrawer()
         setupGestureRecognizers()
         
-        roundCorners(with: cornerRadius)
-        
         view.setNeedsLayout()
         view.layoutIfNeeded()
     }
     
     private func roundCorners(with radius: CGFloat) {
         contentViewController?.view.layer.cornerRadius = radius
-        
         let corners = UIRectCorner(arrayLiteral: .topLeft, .topRight)
         contentViewController?.view.layer.maskedCorners = CACornerMask(rawValue: corners.rawValue)
     }
@@ -372,6 +371,7 @@ extension DrawerViewController {
             }, completion: { [weak self] _ in
                 completion?()
                 guard let self = self else { return }
+                self.roundCorners(with: self.cornerRadius.fullSize)
                 self.contentViewController?.didChangeState(to: .fullSize)
         })
     }
@@ -394,6 +394,7 @@ extension DrawerViewController {
             }, completion: { [weak self] _ in
                 completion?()
                 guard let self = self else { return }
+                self.roundCorners(with: self.cornerRadius.minimised)
                 self.contentViewController?.didChangeState(to: .minimised)
                 self.handleCloseBackgroundAnimation()
         })
@@ -451,9 +452,11 @@ extension DrawerViewController {
             case .fullSize:
                 self.contentViewController?.willChangeState(to: .minimised)
                 self.setupClosedConstraints()
+                self.roundCorners(with: self.cornerRadius.minimised)
             case .minimised:
                 self.contentViewController?.willChangeState(to: .fullSize)
                 self.setupOpenConstraints()
+                self.roundCorners(with: self.cornerRadius.fullSize)
             }
             self.view.layoutIfNeeded()
         }

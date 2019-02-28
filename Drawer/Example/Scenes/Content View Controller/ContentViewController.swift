@@ -73,15 +73,16 @@ class ContentViewController: UIViewController {
 
 extension ContentViewController: Embeddable {
     func willChangeState(to state: EmbeddableState) {
-        runningAnimators.forEach({
-            $0.stopAnimation(false)
-            $0.finishAnimation(at: .current)
-        })
-        guard runningAnimators.isEmpty else { return }
+//        runningAnimators.forEach({
+//            $0.stopAnimation(false)
+//            $0.finishAnimation(at: .current)
+//        })
         let transform: CGAffineTransform
         let collapseAlpha: CGFloat
         let expandAlpha: CGFloat
         
+        guard runningAnimators.isEmpty else { return }
+
         switch state {
         case .minimised:
                 transform = .identity
@@ -129,6 +130,8 @@ extension ContentViewController: Embeddable {
     }
     
     func didScroll(with progress: CGFloat, from state: Drawer.State) {
+        print("\(progress) for state \(state)")
+        runningAnimators.forEach({$0.pauseAnimation()})
         switch state {
         case .fullSize:
             collapseButton.alpha = 1 - progress
@@ -146,6 +149,7 @@ extension ContentViewController: Embeddable {
                                                                embeddedFullHeight: maxHeight,
                                                                state: .minimised,
                                                                embeddedMinimumHeight: minHeight,
+                                                               cornerRadius: Drawer.ContentConfiguration.CornerRadius(fullSize: 20, minimised: 0),
                                                                dismissCompleteCallback:
             { [weak self] in
                 guard let self = self else { return }
