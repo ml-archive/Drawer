@@ -239,7 +239,7 @@ extension DrawerViewController {
                 returnFractionComplete = 0
             }
             
-            contentViewController?.didChangeOpenState(to: .changing(progress: returnFractionComplete, state: state))
+            contentViewController?.didScroll(with: returnFractionComplete, from: state)
             
         case .ended:
             // normal animation conditions
@@ -368,7 +368,7 @@ extension DrawerViewController {
             }, completion: { [weak self] _ in
                 completion?()
                 guard let self = self else { return }
-                self.contentViewController?.didChangeOpenState(to: .fullSize)
+                self.contentViewController?.didChangeState(to: .fullSize)
         })
     }
     
@@ -390,7 +390,7 @@ extension DrawerViewController {
             }, completion: { [weak self] _ in
                 completion?()
                 guard let self = self else { return }
-                self.contentViewController?.didChangeOpenState(to: .minimised)
+                self.contentViewController?.didChangeState(to: .minimised)
                 self.handleCloseBackgroundAnimation()
         })
     }
@@ -404,7 +404,7 @@ extension DrawerViewController {
             }, completion: { [weak self] _ in
                 completion?()
                 guard let self = self else { return }
-                self.contentViewController?.didChangeOpenState(to: .closed)
+                self.contentViewController?.didChangeState(to: .closed)
                 self.destroySelf()
         })
     }
@@ -447,10 +447,10 @@ extension DrawerViewController {
             NSLog("animations \(self.state)")
             switch self.state {
             case .fullSize:
-                self.contentViewController?.willChangeOpenState(to: .minimised)
+                self.contentViewController?.willChangeState(to: .minimised)
                 self.setupClosedConstraints()
             case .minimised:
-                self.contentViewController?.willChangeOpenState(to: .fullSize)
+                self.contentViewController?.willChangeState(to: .fullSize)
                 self.setupOpenConstraints()
             }
             self.view.layoutIfNeeded()
@@ -548,13 +548,13 @@ extension DrawerViewController: EmbeddableContentDelegate {
         case .changeState(let drawerState):
             switch drawerState {
             case .minimise:
-                contentViewController?.willChangeOpenState(to: .minimised)
+                contentViewController?.willChangeState(to: .minimised)
                 closeDrawer()
             case .fullScreen:
-                contentViewController?.willChangeOpenState(to: .fullSize)
+                contentViewController?.willChangeState(to: .fullSize)
                 openDrawer()
             case .dismiss:
-                contentViewController?.willChangeOpenState(to: .closed)
+                contentViewController?.willChangeState(to: .closed)
                 dismiss()
             }
             

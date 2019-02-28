@@ -71,7 +71,7 @@ class ContentViewController: UIViewController {
 }
 
 extension ContentViewController: Embeddable {
-    func willChangeOpenState(to state: EmbeddableState) {
+    func willChangeState(to state: EmbeddableState) {
         switch state {
         case .minimised:
             titleAnimator.addAnimations {
@@ -87,7 +87,7 @@ extension ContentViewController: Embeddable {
         titleAnimator.startAnimation()
     }
     
-    func didChangeOpenState(to state: EmbeddableState) {
+    func didChangeState(to state: EmbeddableState) {
         switch state {
         case .minimised:
             collapseButton.alpha = 0
@@ -95,21 +95,23 @@ extension ContentViewController: Embeddable {
         case .fullSize:
             collapseButton.alpha = 1
             expandButton.alpha = 0
-        case .changing(let progress, let drawerState):
-            switch drawerState {
-            case .fullSize:
-                collapseButton.alpha = 1 - progress
-                expandButton.alpha = progress
-                titleLabel.transform = CGAffineTransform(scaleX: titleScaleMax - (titleScaleMax - 1)*progress,
-                                                         y: titleScaleMax - (titleScaleMax - 1)*progress).concatenating(CGAffineTransform(translationX: 8 - 8*progress, y: 0))
-            case .minimised:
-                collapseButton.alpha = progress
-                expandButton.alpha = 1 - progress
-                titleLabel.transform = CGAffineTransform(scaleX: 1 + (titleScaleMax - 1)*progress,
-                                                         y: 1 + (titleScaleMax - 1)*progress).concatenating(CGAffineTransform(translationX: 8*progress, y: 0))
-            }
         case .closed:
             break
+        }
+    }
+    
+    func didScroll(with progress: CGFloat, from state: Drawer.State) {
+        switch state {
+        case .fullSize:
+            collapseButton.alpha = 1 - progress
+            expandButton.alpha = progress
+            titleLabel.transform = CGAffineTransform(scaleX: titleScaleMax - (titleScaleMax - 1)*progress,
+                                                     y: titleScaleMax - (titleScaleMax - 1)*progress).concatenating(CGAffineTransform(translationX: 8 - 8*progress, y: 0))
+        case .minimised:
+            collapseButton.alpha = progress
+            expandButton.alpha = 1 - progress
+            titleLabel.transform = CGAffineTransform(scaleX: 1 + (titleScaleMax - 1)*progress,
+                                                     y: 1 + (titleScaleMax - 1)*progress).concatenating(CGAffineTransform(translationX: 8*progress, y: 0))
         }
     }
     

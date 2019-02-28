@@ -18,13 +18,20 @@ public protocol Embeddable where Self: UIViewController {
     /// - parameters:
     ///    - state: EmbeddableState
     ///
-    func willChangeOpenState(to state: EmbeddableState)
-    /// Use this method to track scroll progress and changes in state.
+    func willChangeState(to state: EmbeddableState)
+    /// Use this method to track changes in state.
     ///
     /// - parameters:
     ///    - state: EmbeddableState
     ///
-    func didChangeOpenState(to state: EmbeddableState)
+    func didChangeState(to state: EmbeddableState)
+    /// Use this method to track changes of the content position.
+    ///
+    /// - parameters:
+    ///    - progress: CGFloat (values between 0 and 1). Example: A value of 0.1 means that the user just started the transition from state, while a value of 0.9 means that the user is getting close to finishing the transition to the oposite state of the `from state`
+    ///    - state: Drawer.State
+    ///
+    func didScroll(with progress: CGFloat, from state: Drawer.State)
     /// Use this method to adjust the drawer state. Call this method whenever your Content UIViewController has finished laying out its subviews or has changed its subviews.
     ///
     /// - parameters:
@@ -36,7 +43,6 @@ public protocol Embeddable where Self: UIViewController {
 
 public enum EmbeddableState {
     case fullSize
-    case changing(progress: CGFloat, state: Drawer.State)
     case minimised
     case closed
 }
