@@ -79,20 +79,33 @@ extension ContentViewController: Embeddable {
         })
         guard runningAnimators.isEmpty else { return }
         let transform: CGAffineTransform
+        let collapseAlpha: CGFloat
+        let expandAlpha: CGFloat
+        
         switch state {
         case .minimised:
                 transform = .identity
+            collapseAlpha = 0
+            expandAlpha = 1
         case .fullSize:
-            transform = CGAffineTransform(scaleX: titleScaleMax, y: titleScaleMax).concatenating(CGAffineTransform(translationX: 8, y: 0))
+            transform = CGAffineTransform(scaleX: titleScaleMax, y: titleScaleMax).concatenating(CGAffineTransform(translationX: 25, y: 0))
+            collapseAlpha = 1
+            expandAlpha = 0
         default:
             transform = .identity
+            collapseAlpha = 0
+            expandAlpha = 1
         }
         
         titleAnimator.addAnimations {
             self.titleLabel.transform = transform
+            self.collapseButton.alpha = collapseAlpha
+            self.expandButton.alpha = expandAlpha
         }
         titleAnimator.addCompletion {_ in
             self.titleLabel.transform = transform
+            self.collapseButton.alpha = collapseAlpha
+            self.expandButton.alpha = expandAlpha
             self.runningAnimators.removeAll()
         }
         
