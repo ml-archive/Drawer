@@ -13,6 +13,12 @@ import UIKit
 public protocol Embeddable where Self: UIViewController {
     /// Do not set this property directly. The drawer will assign it when it has finished creating.
     var embedDelegate: EmbeddableContentDelegate? { get set }
+    /// Use this method to track upcoming changes in state. Triggered by user tap events or changing of the state caused by calling of the `EmbeddableContentDelegate` handle action
+    ///
+    /// - parameters:
+    ///    - state: EmbeddableState
+    ///
+    func willChangeOpenState(to state: EmbeddableState)
     /// Use this method to track scroll progress and changes in state.
     ///
     /// - parameters:
@@ -29,8 +35,8 @@ public protocol Embeddable where Self: UIViewController {
 }
 
 public enum EmbeddableState {
-    case fullScreen
+    case fullSize
     case changing(progress: CGFloat, state: Drawer.State)
-    case miniScreen
+    case minimised
     case closed
 }

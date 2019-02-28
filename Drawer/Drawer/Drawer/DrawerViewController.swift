@@ -59,7 +59,6 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
     private var direction: Direction!
     private var runningAnimators: [UIViewPropertyAnimator] = []
     private var lastFractionComplete: CGFloat = 0
-    private var progressWhenInterrupted: CGFloat = 0
     
     // MARK: - Init
     
@@ -200,12 +199,28 @@ extension DrawerViewController {
     }
     
     @objc private func handleTap(recognizer: UITapGestureRecognizer) {
-        switch direction {
-        case .up?: direction = .down
-        case .down?: direction = .up
-        default: break
+        if runningAnimators.isEmpty {
+            switch state {
+            case .fullSize:
+                contentViewController?.willChangeOpenState(to: .minimised)
+                closeDrawer()
+            case .minimised:
+                contentViewController?.willChangeOpenState(to: .fullSize)
+                openDrawer()
+            }
+        } else {
+            // reverse animations
+            switch direction {
+            case .down?:
+                contentViewController?.willChangeOpenState(to: .fullSize)
+            case .up?:
+                contentViewController?.willChangeOpenState(to: .minimised)
+            default: break
+            }
+            runningAnimators.forEach({ animator in
+                animator.isReversed = !animator.isReversed
+            })
         }
-        animateOrReversRunningTransition(duration: animationDuration)
     }
     
     @objc private func handlePan(recognizer: UIPanGestureRecognizer) {
@@ -233,7 +248,7 @@ extension DrawerViewController {
             contentViewController?.didChangeOpenState(to: .changing(progress: fractionComplete, state: state))
             
         case .ended:
-            NSLog("ended state \(state) and direction \(direction)")
+        //    NSLog("ended state \(state) and direction \(direction)")
             if state == .fullSize && direction == .down || state == .minimised && direction == .up {
                 continueInteractiveTransition(isReversed: false)
             } else {
@@ -257,15 +272,126 @@ extension DrawerViewController {
     
 }
 
-// MARK: - Animations -
+// MARK: - Content Constrains Helpers -
 
 extension DrawerViewController {
-    enum Direction {
+    
+    private func setupOpenConstraints() {
+        guard bottomAnchorContent != nil else { return }
+        bottomAnchorContent.constant = 0
+    }
+    
+    private func setupClosedConstraints() {
+        guard bottomAnchorContent != nil else { return }
+        bottomAnchorContent.constant = ownMaxHeight - ownMinHeight
+    }
+    
+    private func setupDismissConstraints() {
+        guard bottomAnchorContent != nil else { return }
+        bottomAnchorContent.constant = heightAnchorContent.constant
+    }
+    
+}
+
+// MARK: - Background Helpers -
+
+extension DrawerViewController {
+
+    private func handleOpenBackgroundAnimation() {
+        switch self.backgroundType {
+        case .withBlur(let style)?:
+            self.backgroundBlurEffectView?.effect = UIBlurEffect(style: style)
+        case .withColor(let color)?:
+            backgroundColorView?.backgroundColor = color
+        default: break
+        }
+    }
+    
+    
+    private func handleCloseBackgroundAnimation() {
+        switch self.backgroundType {
+        case .withBlur?:
+            self.backgroundBlurEffectView?.effect = nil
+        case .withColor(let color)?:
+            backgroundColorView?.backgroundColor = color.withAlphaComponent(0)
+        default: break
+        }
+    }
+}
+
+// MARK: - Full Animations -
+
+extension DrawerViewController {
+    private func openDrawer(animated: Bool = true, completion: (() -> Void)? = nil) {
+        state = .fullSize
+        setupOpenConstraints()
+        
+        //allow for scrolling in ContentVC
+        if let scrollableContent = contentViewController as? EmbeddedScrollable {
+            scrollableContent.setScrollEnabled(true)
+        }
+        
+        let duration: TimeInterval = animated ? animationDuration : 0
+        UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: damping, initialSpringVelocity: 0, options: [.beginFromCurrentState], animations: { [weak self] in
+            guard let self = self else { return }
+            self.handleOpenBackgroundAnimation()
+            self.view.layoutIfNeeded()
+            }, completion: { [weak self] _ in
+                completion?()
+                guard let self = self else { return }
+                self.contentViewController?.didChangeOpenState(to: .fullSize)
+        })
+    }
+    
+    private func closeDrawer(animated: Bool = true, completion: (() -> Void)? = nil) {
+        state = .minimised
+        setupClosedConstraints()
+        
+        //allow for scrolling in ContentVC
+        if let scrollableContent = contentViewController as? EmbeddedScrollable {
+            scrollableContent.setScrollEnabled(true)
+        }
+        
+        let duration: TimeInterval = animated ? animationDuration : 0
+        UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: damping, initialSpringVelocity: 0, options: [.beginFromCurrentState], animations: { [weak self] in
+            guard let self = self else { return }
+            self.handleCloseBackgroundAnimation()
+            self.view.layoutIfNeeded()
+            
+            }, completion: { [weak self] _ in
+                completion?()
+                guard let self = self else { return }
+                self.contentViewController?.didChangeOpenState(to: .minimised)
+                self.handleCloseBackgroundAnimation()
+        })
+    }
+    
+    private func dismiss(completion: (() -> Void)? = nil) {
+        state = .minimised
+        setupDismissConstraints()
+        
+        UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: damping, initialSpringVelocity: 0, options: [.beginFromCurrentState], animations: { [weak self] in
+            self?.view.layoutIfNeeded()
+            }, completion: { [weak self] _ in
+                completion?()
+                guard let self = self else { return }
+                self.contentViewController?.didChangeOpenState(to: .closed)
+                self.destroySelf()
+        })
+    }
+
+}
+
+// MARK: - Scroll Animations -
+
+extension DrawerViewController {
+    private enum Direction {
         case up, down
     }
     
     /// Initiate transition if not already running
     private func animateTransitionIfNeeded(duration: TimeInterval) {
+        guard runningAnimators.isEmpty else { return }
         // SLIDE Animation
         switch state {
         case .fullSize:
@@ -274,22 +400,30 @@ extension DrawerViewController {
             direction = .up
         }
         
-        guard runningAnimators.isEmpty else { return }
-        let animator = UIViewPropertyAnimator(duration: duration, curve: .linear)
+        let animator = UIViewPropertyAnimator(duration: duration, dampingRatio: 1)
+        
         animator.addAnimations {
-            self.slideAnimations()
+            switch self.state {
+            case .fullSize:
+                self.setupClosedConstraints()
+            case .minimised:
+                self.setupOpenConstraints()
+            }
+            self.view.layoutIfNeeded()
         }
+        
         animator.addCompletion { _ in
             switch self.direction {
             case .down?:
-                self.closeDrawer()
+                self.closeDrawer(animated: false)
             case .up?:
-                self.openDrawer()
+                self.openDrawer(animated: false)
             default: break
             }
             
             self.runningAnimators.removeAll()
         }
+        
         animator.startAnimation()
         runningAnimators.append(animator)
         
@@ -306,73 +440,54 @@ extension DrawerViewController {
         let backgroundAnimator = UIViewPropertyAnimator(duration: duration, timingParameters: timing)
         backgroundAnimator.scrubsLinearly = false
         backgroundAnimator.addAnimations {
-            self.backgroundAnimations()
+            switch self.state {
+            case .fullSize:
+                switch self.backgroundType {
+                case .withBlur?:
+                    self.backgroundBlurEffectView?.effect = nil
+                case .withColor(let color)?:
+                    self.backgroundColorView?.backgroundColor = color.withAlphaComponent(0)
+                default: break
+                }
+            case .minimised:
+                switch self.backgroundType {
+                case .withBlur(let style)?:
+                    self.backgroundBlurEffectView?.effect = UIBlurEffect(style: style)
+                case .withColor(let color)?:
+                    self.backgroundColorView?.backgroundColor = color
+                default: break
+                }
+            }
         }
         backgroundAnimator.startAnimation()
         runningAnimators.append(backgroundAnimator)
     }
-    
-    private func slideAnimations() {
-        switch state {
-        case .fullSize:
-            setupClosedConstraints()
-        case .minimised:
-            setupOpenConstraints()
-        }
-        view.layoutIfNeeded()
-    }
-    
-    private func backgroundAnimations() {
-        switch state {
-        case .fullSize:
-            switch backgroundType {
-            case .withBlur?:
-                backgroundBlurEffectView?.effect = nil
-            case .withColor(let color)?:
-                backgroundColorView?.backgroundColor = color.withAlphaComponent(0)
-            default: break
-            }
-        case .minimised:
-            switch backgroundType {
-            case .withBlur(let style)?:
-                backgroundBlurEffectView?.effect = UIBlurEffect(style: style)
-            case .withColor(let color)?:
-                backgroundColorView?.backgroundColor = color
-            default: break
-            }
-        }
-    }
-    
-    private func animateOrReversRunningTransition(duration: TimeInterval) {
-        if runningAnimators.isEmpty {
-            animateTransitionIfNeeded(duration: animationDuration)
-        } else {
-            runningAnimators.forEach({ animator in
-                animator.isReversed = !animator.isReversed
-            })
-        }
-    }
-    
+
     private func startInteractiveTransition(duration: TimeInterval) {
         animateTransitionIfNeeded(duration: animationDuration)
         runningAnimators.forEach({ animator in
+            if animator.isReversed {
+                animator.fractionComplete = 1 - animator.fractionComplete
+                animator.isReversed = false
+            }
             animator.pauseAnimation()
-            progressWhenInterrupted = animator.fractionComplete
         })
     }
     
     private func updateInteractiveTransition(fractionComplete: CGFloat) {
         lastFractionComplete = fractionComplete
+        
         runningAnimators.forEach({ animator in
             animator.fractionComplete = fractionComplete
         })
     }
     
     private func continueInteractiveTransition(isReversed: Bool) {
-        let timining = UICubicTimingParameters(animationCurve: .linear)
         runningAnimators.forEach({ animator in
-            animator.isReversed = isReversed
-            animator.continueAnimation(withTimingParameters: timining, durationFactor: 0)
+            if isReversed {
+                animator.isReversed = !animator.isReversed
+            }
+            animator.continueAnimation(withTimingParameters: nil, durationFactor: 1 - lastFractionComplete)
         })
     }
     
@@ -389,116 +504,7 @@ extension DrawerViewController {
         }
     }
     
-    // MARK: - Open
-    
-    private func openDrawer(animated: Bool = true, completion: (() -> Void)? = nil) {
-        state = .fullSize
-        setupOpenConstraints()
-        contentViewController?.didChangeOpenState(to: .fullScreen)
-        
-        //allow for scrolling in ContentVC
-        if let scrollableContent = contentViewController as? EmbeddedScrollable {
-            scrollableContent.setScrollEnabled(true)
-        }
-        
-        UIView.animate(withDuration: animated ? animationDuration : 0.0, delay: 0, usingSpringWithDamping: damping, initialSpringVelocity: 0, options: [.beginFromCurrentState], animations: { [weak self] in
-            guard let self = self else { return }
-            self.handleOpenBackgroundAnimation()
-            self.view.layoutIfNeeded()
-            }, completion: { _ in
-                completion?()
-        })
-    }
-    
-    private func handleOpenBackgroundAnimation() {
-        switch self.backgroundType {
-        case .withBlur(let style)?:
-            self.backgroundBlurEffectView?.effect = UIBlurEffect(style: style)
-        case .withColor(let color)?:
-            backgroundColorView?.backgroundColor = color
-        default: break
-        }
-    }
-    
-    private func setupOpenConstraints() {
-        guard bottomAnchorContent != nil else { return }
-        bottomAnchorContent.constant = 0
-        
-    }
-    
-    // MARK: - Close
-    
-    func closeDrawer(animated: Bool = true, completion: (() -> Void)? = nil) {
-        state = .minimised
-        setupClosedConstraints()
-        contentViewController?.didChangeOpenState(to: .miniScreen)
-        
-        //allow for scrolling in ContentVC
-        if let scrollableContent = contentViewController as? EmbeddedScrollable {
-            scrollableContent.setScrollEnabled(true)
-        }
-        
-        UIView.animate(withDuration: animated ? animationDuration : 0.0, delay: 0, usingSpringWithDamping: damping, initialSpringVelocity: 0, options: [.beginFromCurrentState], animations: { [weak self] in
-            guard let self = self else { return }
-            self.handleCloseBackgroundAnimation()
-            self.view.layoutIfNeeded()
-            
-            }, completion: { [weak self] _ in
-                guard let self = self else { return }
-                self.handleCloseBackgroundAnimation()
-                completion?()
-        })
-    }
-    
-    private func handleCloseBackgroundAnimation() {
-        switch self.backgroundType {
-        case .withBlur?:
-            self.backgroundBlurEffectView?.effect = nil
-        case .withColor(let color)?:
-            backgroundColorView?.backgroundColor = color.withAlphaComponent(0)
-        default: break
-        }
-    }
-    
-    private func setupClosedConstraints() {
-        guard bottomAnchorContent != nil else { return }
-        bottomAnchorContent.constant = ownMaxHeight - ownMinHeight
-    }
-    
-    // MARK: - Dismiss
-    
-    private func dismiss(completion: (() -> Void)? = nil) {
-        state = .minimised
-        setupDismissConstraints()
-        
-        UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: damping, initialSpringVelocity: 0, options: [.beginFromCurrentState], animations: { [weak self] in
-            self?.view.layoutIfNeeded()
-            }, completion: { [weak self] _ in
-                completion?()
-                self?.destroySelf()
-        })
-    }
-    
-    private func setupDismissConstraints() {
-        guard bottomAnchorContent != nil else { return }
-        bottomAnchorContent.constant = heightAnchorContent.constant
-    }
-    
-    // MARK: - Destroy
-    
-    private func destroySelf() {
-        contentViewController?.view.removeFromSuperview()
-        contentViewController?.removeFromParent()
-        
-        view.removeFromSuperview()
-        removeFromParent()
-        
-        contentViewController = nil
-        backgroundViewController = nil
-        embedConfig?.dismissCompleteCallback?()
-        
-        isInitiated = false
-    }
+   
 }
 
 // MARK: - EmbeddableContentDelegate
@@ -523,10 +529,13 @@ extension DrawerViewController: EmbeddableContentDelegate {
         case .changeState(let drawerState):
             switch drawerState {
             case .minimise:
+                contentViewController?.willChangeOpenState(to: .minimised)
                 closeDrawer()
             case .fullScreen:
+                contentViewController?.willChangeOpenState(to: .fullSize)
                 openDrawer()
             case .dismiss:
+                contentViewController?.willChangeOpenState(to: .closed)
                 dismiss()
             }
             
@@ -586,6 +595,27 @@ extension DrawerViewController: TouchPassingWindowDelegate {
         }
         let views: [UIView] = [embeddedContentViewController.view]
         return views
+    }
+    
+}
+
+
+// MARK: - Destroy -
+
+extension DrawerViewController {
+    
+    private func destroySelf() {
+        contentViewController?.view.removeFromSuperview()
+        contentViewController?.removeFromParent()
+        
+        view.removeFromSuperview()
+        removeFromParent()
+        
+        contentViewController = nil
+        backgroundViewController = nil
+        embedConfig?.dismissCompleteCallback?()
+        
+        isInitiated = false
     }
     
 }

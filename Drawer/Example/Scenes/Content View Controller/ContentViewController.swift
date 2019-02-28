@@ -20,8 +20,14 @@ class ContentViewController: UIViewController {
     // MARK: - Properties
     
     var embedDelegate: EmbeddableContentDelegate?
-    
+    private var animationDuration: TimeInterval = 1
+   
+    // title animations
+    private var titleAnimator: UIViewPropertyAnimator!
+    private let titleScaleMax: CGFloat = 1.6
+
     // MARK: - Init
+    
     class func instantiate() -> ContentViewController {
         let name = "\(ContentViewController.self)"
         let storyboard = UIStoryboard(name: name, bundle: nil)
@@ -33,6 +39,10 @@ class ContentViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        titleAnimator = UIViewPropertyAnimator(duration: animationDuration, dampingRatio: 1)
+        titleAnimator.addAnimations {
+            
+        }
         adjustDrawer(with: 400, with: 100)
 
     }
@@ -61,29 +71,42 @@ class ContentViewController: UIViewController {
 }
 
 extension ContentViewController: Embeddable {
-    func didChangeOpenState(to state: EmbeddableState) {
-        let titleScaleMax: CGFloat = 1.6
+    func willChangeOpenState(to state: EmbeddableState) {
         switch state {
-        case .miniScreen:
+        case .minimised:
+            titleAnimator.addAnimations {
+                self.titleLabel.transform = .identity
+            }
+        case .fullSize:
+            titleAnimator.addAnimations {
+                self.titleLabel.transform = CGAffineTransform(scaleX: self.titleScaleMax, y: self.titleScaleMax).concatenating(CGAffineTransform(translationX: 8, y: 0))
+            }
+        default: break
+        }
+        
+        titleAnimator.startAnimation()
+    }
+    
+    func didChangeOpenState(to state: EmbeddableState) {
+        switch state {
+        case .minimised:
             collapseButton.alpha = 0
             expandButton.alpha = 1
-            titleLabel.transform = .identity
-        case .fullScreen:
+        case .fullSize:
             collapseButton.alpha = 1
             expandButton.alpha = 0
-            titleLabel.transform = CGAffineTransform(scaleX: titleScaleMax, y: titleScaleMax).concatenating(CGAffineTransform(translationX: 8, y: 0))
         case .changing(let progress, let drawerState):
             switch drawerState {
             case .fullSize:
                 collapseButton.alpha = 1 - progress
                 expandButton.alpha = progress
                 titleLabel.transform = CGAffineTransform(scaleX: titleScaleMax - (titleScaleMax - 1)*progress,
-                                                          y: titleScaleMax - (titleScaleMax - 1)*progress).concatenating(CGAffineTransform(translationX: 8 - 8*progress, y: 0))
+                                                         y: titleScaleMax - (titleScaleMax - 1)*progress).concatenating(CGAffineTransform(translationX: 8 - 8*progress, y: 0))
             case .minimised:
                 collapseButton.alpha = progress
                 expandButton.alpha = 1 - progress
                 titleLabel.transform = CGAffineTransform(scaleX: 1 + (titleScaleMax - 1)*progress,
-                                                          y: 1 + (titleScaleMax - 1)*progress).concatenating(CGAffineTransform(translationX: 8*progress, y: 0))
+                                                         y: 1 + (titleScaleMax - 1)*progress).concatenating(CGAffineTransform(translationX: 8*progress, y: 0))
             }
         case .closed:
             break
@@ -91,7 +114,7 @@ extension ContentViewController: Embeddable {
     }
     
     func adjustDrawer(with maxHeight: CGFloat, with minHeight: CGFloat) {
-        let contentConfiguration = Drawer.ContentConfiguration(duration: 0.5,
+        let contentConfiguration = Drawer.ContentConfiguration(duration: animationDuration,
                                                                embeddedFullHeight: maxHeight,
                                                                state: .minimised,
                                                                embeddedMinimumHeight: minHeight,
