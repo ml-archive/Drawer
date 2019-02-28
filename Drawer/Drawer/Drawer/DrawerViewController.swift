@@ -218,6 +218,9 @@ extension DrawerViewController {
                     }
                 }
             } else { // scroll started from initial state
+                guard fractionComplete > 0 && fractionComplete < 1 else {
+                    return
+                }
                 for (index, animator) in runningAnimators.enumerated() {
                     if animator.isReversed {
                         animator.fractionComplete = fractionComplete - animationProgress[index]
@@ -366,7 +369,6 @@ extension DrawerViewController {
         let duration: TimeInterval = animated ? animationDuration : 0
         UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: damping, initialSpringVelocity: 0, options: [.beginFromCurrentState], animations: { [weak self] in
             guard let self = self else { return }
-            self.handleOpenBackgroundAnimation()
             self.view.layoutIfNeeded()
             }, completion: { [weak self] _ in
                 completion?()
@@ -388,7 +390,6 @@ extension DrawerViewController {
         let duration: TimeInterval = animated ? animationDuration : 0
         UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: damping, initialSpringVelocity: 0, options: [.beginFromCurrentState], animations: { [weak self] in
             guard let self = self else { return }
-            self.handleCloseBackgroundAnimation()
             self.view.layoutIfNeeded()
             
             }, completion: { [weak self] _ in
@@ -396,7 +397,6 @@ extension DrawerViewController {
                 guard let self = self else { return }
                 self.roundCorners(with: self.cornerRadius.minimised)
                 self.contentViewController?.didChangeState(to: .minimised)
-                self.handleCloseBackgroundAnimation()
         })
     }
     
@@ -453,15 +453,17 @@ extension DrawerViewController {
                 self.contentViewController?.willChangeState(to: .minimised)
                 self.setupClosedConstraints()
                 self.roundCorners(with: self.cornerRadius.minimised)
+                self.handleCloseBackgroundAnimation()
             case .minimised:
                 self.contentViewController?.willChangeState(to: .fullSize)
                 self.setupOpenConstraints()
                 self.roundCorners(with: self.cornerRadius.fullSize)
+                self.handleOpenBackgroundAnimation()
             }
             self.view.layoutIfNeeded()
         }
         
-        animator.addCompletion { _ in
+        animator.addCompletion { position in
             switch self.direction {
             case .down?:
                 self.closeDrawer(animated: self.state == .minimised)
@@ -477,20 +479,6 @@ extension DrawerViewController {
         
         animator.startAnimation()
         runningAnimators.append(animator)
-        
-        // BLUR Animation
-        let backgroundAnimator = UIViewPropertyAnimator(duration: duration, dampingRatio: damping)
-        backgroundAnimator.addAnimations {
-            switch self.state {
-            case .fullSize:
-                self.handleCloseBackgroundAnimation()
-            case .minimised:
-                self.handleOpenBackgroundAnimation()
-            }
-        }
-
-        backgroundAnimator.startAnimation()
-        runningAnimators.append(backgroundAnimator)
     }
     
     // MARK: - Show animation
