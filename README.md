@@ -3,9 +3,12 @@
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/nodes-ios/Reachability-UI/blob/master/LICENSE)
 [![CircleCI](https://circleci.com/gh/nodes-ios/Drawer.svg?style=shield)](https://circleci.com/gh/nodes-ios/Drawer)
 
-### Intro
+## Intro
 
 `Drawer` is a framework that allows you to easily embed an `UIViewController` in a drawer and display it on top of another `UIViewController`.
+
+![](drawer_open.gif)
+![](drawer_close.gif)
 
 ## 📝 Requirements
 
