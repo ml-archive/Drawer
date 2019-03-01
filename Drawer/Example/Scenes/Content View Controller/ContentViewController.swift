@@ -23,6 +23,7 @@ class ContentViewController: UIViewController {
     private var animationDuration: TimeInterval = 1
    
     // title animations
+    private var runningAnimators: [UIViewPropertyAnimator] = []
     private var titleAnimator: UIViewPropertyAnimator!
     private let titleScaleMax: CGFloat = 1.6
 
@@ -71,23 +72,49 @@ class ContentViewController: UIViewController {
 }
 
 extension ContentViewController: Embeddable {
-    func willChangeOpenState(to state: EmbeddableState) {
+    func willChangeState(to state: EmbeddableState) {
+        runningAnimators.forEach({
+            $0.stopAnimation(false)
+            $0.finishAnimation(at: .current)
+        })
+        let transform: CGAffineTransform
+        let collapseAlpha: CGFloat
+        let expandAlpha: CGFloat
+        
+        guard runningAnimators.isEmpty else { return }
+
         switch state {
         case .minimised:
-            titleAnimator.addAnimations {
-                self.titleLabel.transform = .identity
-            }
+            transform = .identity
+            collapseAlpha = 0
+            expandAlpha = 1
         case .fullSize:
-            titleAnimator.addAnimations {
-                self.titleLabel.transform = CGAffineTransform(scaleX: self.titleScaleMax, y: self.titleScaleMax).concatenating(CGAffineTransform(translationX: 8, y: 0))
-            }
-        default: break
+            transform = CGAffineTransform(scaleX: titleScaleMax, y: titleScaleMax).concatenating(CGAffineTransform(translationX: 25, y: 0))
+            collapseAlpha = 1
+            expandAlpha = 0
+        default:
+            transform = .identity
+            collapseAlpha = 0
+            expandAlpha = 1
+        }
+        
+        titleAnimator.addAnimations {
+            self.titleLabel.transform = transform
+            self.collapseButton.alpha = collapseAlpha
+            self.expandButton.alpha = expandAlpha
+        }
+        titleAnimator.addCompletion {_ in
+            self.titleLabel.transform = transform
+            self.collapseButton.alpha = collapseAlpha
+            self.expandButton.alpha = expandAlpha
+            self.runningAnimators.removeAll()
         }
         
         titleAnimator.startAnimation()
+        runningAnimators.append(titleAnimator)
     }
     
-    func didChangeOpenState(to state: EmbeddableState) {
+    func didChangeState(to state: EmbeddableState) {
         switch state {
         case .minimised:
             collapseButton.alpha = 0
@@ -95,22 +122,30 @@ extension ContentViewController: Embeddable {
         case .fullSize:
             collapseButton.alpha = 1
             expandButton.alpha = 0
-        case .changing(let progress, let drawerState):
-            switch drawerState {
-            case .fullSize:
-                collapseButton.alpha = 1 - progress
-                expandButton.alpha = progress
-                titleLabel.transform = CGAffineTransform(scaleX: titleScaleMax - (titleScaleMax - 1)*progress,
-                                                         y: titleScaleMax - (titleScaleMax - 1)*progress).concatenating(CGAffineTransform(translationX: 8 - 8*progress, y: 0))
-            case .minimised:
-                collapseButton.alpha = progress
-                expandButton.alpha = 1 - progress
-                titleLabel.transform = CGAffineTransform(scaleX: 1 + (titleScaleMax - 1)*progress,
-                                                         y: 1 + (titleScaleMax - 1)*progress).concatenating(CGAffineTransform(translationX: 8*progress, y: 0))
-            }
         case .closed:
             break
         }
+        
+        runningAnimators.forEach({
+            $0.stopAnimation(false)
+            $0.finishAnimation(at: .end)
+        })
+    }
+    
+    func didScroll(with progress: CGFloat, from state: Drawer.State) {
+        runningAnimators.forEach({$0.pauseAnimation()})
+        switch state {
+        case .fullSize:
+            collapseButton.alpha = 1 - progress
+            expandButton.alpha = progress
+            titleAnimator.fractionComplete = progress
+        case .minimised:
+            collapseButton.alpha = progress
+            expandButton.alpha = 1 - progress
+            titleAnimator.fractionComplete =  progress
+        }
+        
+        runningAnimators.forEach({$0.continueAnimation(withTimingParameters: nil, durationFactor: 0)})
     }
     
     func adjustDrawer(with maxHeight: CGFloat, with minHeight: CGFloat) {
@@ -118,6 +153,7 @@ extension ContentViewController: Embeddable {
                                                                embeddedFullHeight: maxHeight,
                                                                state: .minimised,
                                                                embeddedMinimumHeight: minHeight,
+                                                               cornerRadius: Drawer.ContentConfiguration.CornerRadius(fullSize: 20, minimised: 0),
                                                                dismissCompleteCallback:
             { [weak self] in
                 guard let self = self else { return }
@@ -126,6 +162,5 @@ extension ContentViewController: Embeddable {
         
         embedDelegate?.handle(embeddedAction: .layoutUpdated(config: contentConfiguration))
     }
-    
     
 }

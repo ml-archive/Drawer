@@ -19,8 +19,7 @@ class ViewController: UIViewController {
         
         let drawerCoordinator = DrawerCoordinator(contentViewController: contentVC,
                                                   backgroundViewController: self,
-                                                  drawerBackgroundType: .withBlur(.light),
-                                                  with: 12)
+                                                  drawerBackgroundType: .withColor(UIColor.black.withAlphaComponent(0.5)))
         drawerCoordinator.start()
         self.drawer = drawerCoordinator
         

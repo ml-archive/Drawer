@@ -14,16 +14,13 @@ public class DrawerCoordinator {
     private let backgroundViewController: UIViewController
     private let contentViewController: (UIViewController & Embeddable)
     private let drawerBackgroundType: DrawerViewController.DrawerBackgroundType
-    private let cornerRadius: CGFloat
     
     public init(contentViewController: UIViewController & Embeddable,
          backgroundViewController: UIViewController,
-         drawerBackgroundType: DrawerViewController.DrawerBackgroundType,
-         with cornerRadius: CGFloat? = 0) {
+         drawerBackgroundType: DrawerViewController.DrawerBackgroundType) {
         self.contentViewController = contentViewController
         self.backgroundViewController = backgroundViewController
         self.drawerBackgroundType = drawerBackgroundType
-        self.cornerRadius = cornerRadius ?? 0
     }
     
     public func start() {
@@ -36,7 +33,7 @@ public class DrawerCoordinator {
         drawerVC.contentViewController = contentViewController
         drawerVC.backgroundViewController = backgroundViewController
         
-        drawerVC.makeViews(with: drawerBackgroundType, with: cornerRadius)
+        drawerVC.makeViews(with: drawerBackgroundType)
     }
 
 }

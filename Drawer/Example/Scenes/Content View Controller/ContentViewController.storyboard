@@ -41,14 +41,14 @@
                                 </connections>
                             </button>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rmc-Pj-Vhw">
-                                <rect key="frame" x="0.0" y="90" width="375" height="577"/>
+                                <rect key="frame" x="10" y="90" width="355" height="577"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gwp-AA-gUu">
-                                <rect key="frame" x="15" y="46" width="30" height="18"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Lorem ipsum" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gwp-AA-gUu">
+                                <rect key="frame" x="15" y="46" width="88.5" height="18"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -57,10 +57,10 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="iHh-gK-Rag" firstAttribute="bottom" secondItem="sQi-I8-BcB" secondAttribute="bottom" id="8IL-80-u9k"/>
-                            <constraint firstItem="rmc-Pj-Vhw" firstAttribute="leading" secondItem="Fhz-5B-qaF" secondAttribute="leading" id="Aro-5J-AN5"/>
+                            <constraint firstItem="rmc-Pj-Vhw" firstAttribute="leading" secondItem="Fhz-5B-qaF" secondAttribute="leading" constant="10" id="Aro-5J-AN5"/>
                             <constraint firstItem="rmc-Pj-Vhw" firstAttribute="top" secondItem="iHh-gK-Rag" secondAttribute="bottom" constant="15" id="Fvf-Dv-dJg"/>
                             <constraint firstItem="Gwp-AA-gUu" firstAttribute="centerY" secondItem="iHh-gK-Rag" secondAttribute="centerY" id="NlE-OF-z2Q"/>
-                            <constraint firstItem="Fhz-5B-qaF" firstAttribute="trailing" secondItem="rmc-Pj-Vhw" secondAttribute="trailing" id="QrU-OQ-uek"/>
+                            <constraint firstItem="Fhz-5B-qaF" firstAttribute="trailing" secondItem="rmc-Pj-Vhw" secondAttribute="trailing" constant="10" id="QrU-OQ-uek"/>
                             <constraint firstItem="Fhz-5B-qaF" firstAttribute="trailing" secondItem="sQi-I8-BcB" secondAttribute="trailing" constant="15" id="XL1-gf-KtQ"/>
                             <constraint firstItem="iHh-gK-Rag" firstAttribute="leading" secondItem="sQi-I8-BcB" secondAttribute="leading" id="ZvV-YF-BOq"/>
                             <constraint firstItem="iHh-gK-Rag" firstAttribute="top" secondItem="sQi-I8-BcB" secondAttribute="top" id="bE3-3x-0tX"/>

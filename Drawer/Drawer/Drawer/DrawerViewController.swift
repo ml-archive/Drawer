@@ -23,6 +23,7 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
             ownMaxHeight = embedConfig.embeddedFullHeight
             ownMinHeight = embedConfig.embeddedMinimumHeight
             heightAnchorContent.constant = ownMaxHeight
+            cornerRadius = embedConfig.cornerRadius
             
             //drawer state
             state = embedConfig.state
@@ -32,14 +33,15 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
     }
     
     // MARK: Sizes and Constrains
-
+    
     private var heightAnchorContent: NSLayoutConstraint!
     private var bottomAnchorContent: NSLayoutConstraint!
     private var ownMaxHeight: CGFloat = 0
     private var ownMinHeight: CGFloat = 0
+    private var cornerRadius: Drawer.ContentConfiguration.CornerRadius!
     
     // MARK: States
-
+    
     private var isInitiated: Bool = false
     private var state: Drawer.State = .minimised
     private var backgroundInteraction: Drawer.ContainerInteraction = .whenMinimised
@@ -58,6 +60,7 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
     // direction represents scrolling direction of the view
     private var direction: Direction!
     private var runningAnimators: [UIViewPropertyAnimator] = []
+    private var animationProgress: [CGFloat] = []
     private var lastFractionComplete: CGFloat = 0
     
     // MARK: - Init
@@ -66,7 +69,7 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
         super.loadView()
         self.view = TouchInterceptingView()
     }
-
+    
     override public func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
@@ -78,7 +81,7 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
         
     }
     
-    func makeViews(with backgroundType: DrawerBackgroundType, with cornerRadius: CGFloat) {
+    func makeViews(with backgroundType: DrawerBackgroundType) {
         self.backgroundType = backgroundType
         view.backgroundColor = .clear
         
@@ -93,15 +96,12 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
         addContentToDrawer()
         setupGestureRecognizers()
         
-        roundCorners(with: cornerRadius)
-        
         view.setNeedsLayout()
         view.layoutIfNeeded()
     }
     
     private func roundCorners(with radius: CGFloat) {
         contentViewController?.view.layer.cornerRadius = radius
-
         let corners = UIRectCorner(arrayLiteral: .topLeft, .topRight)
         contentViewController?.view.layer.maskedCorners = CACornerMask(rawValue: corners.rawValue)
     }
@@ -186,88 +186,123 @@ extension DrawerViewController {
     
     private func setupGestureRecognizers() {
         do {
-            let gr = UIPanGestureRecognizer.init(target: self, action: #selector(handlePan))
+            let gr = InstantPanGestureRecognizer.init(target: self, action: #selector(handlePan))
             gr.delegate = self
-            view.addGestureRecognizer(gr)
-        }
-        
-        do {
-            let gr = UITapGestureRecognizer.init(target: self, action: #selector(handleTap))
-            gr.delegate = self
-            view.addGestureRecognizer(gr)
+            contentViewController?.view.addGestureRecognizer(gr)
         }
     }
-    
-    @objc private func handleTap(recognizer: UITapGestureRecognizer) {
-        if runningAnimators.isEmpty {
-            switch state {
-            case .fullSize:
-                contentViewController?.willChangeOpenState(to: .minimised)
-                closeDrawer()
-            case .minimised:
-                contentViewController?.willChangeOpenState(to: .fullSize)
-                openDrawer()
-            }
-        } else {
-            // reverse animations
-            switch direction {
-            case .down?:
-                contentViewController?.willChangeOpenState(to: .fullSize)
-            case .up?:
-                contentViewController?.willChangeOpenState(to: .minimised)
-            default: break
-            }
-            runningAnimators.forEach({ animator in
-                animator.isReversed = !animator.isReversed
-            })
-        }
-    }
-    
+
     @objc private func handlePan(recognizer: UIPanGestureRecognizer) {
         switch recognizer.state {
         case .began:
             startInteractiveTransition(duration: animationDuration)
         case .changed:
-            let translation = recognizer.translation(in: view)
+            let translation = recognizer.translation(in: contentViewController?.view)
+            var fractionComplete = translation.y / (ownMaxHeight - ownMinHeight)
             
-            var fractionComplete: CGFloat
-            // determinte scroll progress based on UIPanGestureRecognizer y translation. The variable fractionComplete can take values between 0 and 1
             switch state {
             case .fullSize:
-                let progress = translation.y / (ownMaxHeight - ownMinHeight)
-                fractionComplete = progress > 1 ? 1 : (progress < 0 ? 0 : progress)
                 direction = fourDecimal(fractionComplete) >= fourDecimal(lastFractionComplete) ? .down : .up
-                updateInteractiveTransition(fractionComplete: fractionComplete)
             case .minimised:
-                let progress = translation.y / (ownMaxHeight - ownMinHeight) * -1
-                fractionComplete = progress > 1 ? 1 : (progress < 0 ? 0 : progress)
+                fractionComplete *= -1
                 direction = fourDecimal(fractionComplete) >= fourDecimal(lastFractionComplete) ? .up : .down
-                updateInteractiveTransition(fractionComplete: fractionComplete)
+            }
+
+            // if we have a progress, that means that the user started the swipe during the animation
+            if animationProgress[0] > 0 {
+                for (index, animator) in runningAnimators.enumerated() {
+                    if animator.isReversed {
+                        animator.fractionComplete = -fractionComplete + animationProgress[index]
+                    } else {
+                        animator.fractionComplete = fractionComplete + animationProgress[index]
+                    }
+                }
+            } else { // scroll started from initial state
+                guard fractionComplete > 0 && fractionComplete < 1 else {
+                    return
+                }
+                for (index, animator) in runningAnimators.enumerated() {
+                    if animator.isReversed {
+                        animator.fractionComplete = fractionComplete - animationProgress[index]
+                    } else {
+                        animator.fractionComplete = fractionComplete + animationProgress[index]
+                    }
+                }
             }
             
-            contentViewController?.didChangeOpenState(to: .changing(progress: fractionComplete, state: state))
+            // set lastFractionComplete -> used to determine pan direction
+            lastFractionComplete = fractionComplete
+            
+            // normalise the progress and return it to the delegate
+            var returnFractionComplete = runningAnimators[0].fractionComplete
+            if returnFractionComplete >= 1 {
+                returnFractionComplete = 1
+            } else if returnFractionComplete <= 0 {
+                returnFractionComplete = 0
+            }
+            
+            contentViewController?.didScroll(with: returnFractionComplete, from: state)
             
         case .ended:
-        //    NSLog("ended state \(state) and direction \(direction)")
+            // normal animation conditions
             if state == .fullSize && direction == .down || state == .minimised && direction == .up {
-                continueInteractiveTransition(isReversed: false)
+                switch state {
+                case .fullSize:
+                    switch direction {
+                    case .down?:
+                        if runningAnimators[0].isReversed {
+                            runningAnimators.forEach { $0.isReversed = !$0.isReversed } // will Cancel reverse
+                            contentViewController?.willChangeState(to: .minimised)
+                        }
+                    default: break
+                    }
+                case .minimised:
+                    switch direction {
+                    case .up?:
+                        if runningAnimators[0].isReversed {
+                            runningAnimators.forEach { $0.isReversed = !$0.isReversed } //will Cancel reverse
+                            contentViewController?.willChangeState(to: .fullSize)
+                        }
+                    default: break
+                    }
+                }
             } else {
-                NSLog("revesing")
-                continueInteractiveTransition(isReversed: true)
-//                runningAnimators.forEach { animation in
-//                    animation.stopAnimation(true)
-//                }
-//                switch direction {
-//                case .up?:
-//                    openDrawer()
-//                case .down?:
-//                    closeDrawer()
-//                default: break
-//                }
-//                runningAnimators.removeAll()
+                // reverse the animations based on their current state and pan motion direction
+                switch state {
+                case .fullSize:
+                    switch direction {
+                    case .up?:
+                        if !runningAnimators[0].isReversed {
+                            runningAnimators.forEach { $0.isReversed = !$0.isReversed } //will reverse
+                            contentViewController?.willChangeState(to: .fullSize)
+                        }
+                    default: break
+                    }
+                case .minimised:
+                    switch direction {
+                    case .down?:
+                        if !runningAnimators[0].isReversed {
+                            runningAnimators.forEach { $0.isReversed = !$0.isReversed } //will reverse
+                            contentViewController?.willChangeState(to: .minimised)
+                        }
+                    default: break
+                    }
+                }
             }
+
+            // continue the paused animations
+            runningAnimators.forEach { $0.continueAnimation(withTimingParameters: nil, durationFactor: 0) }
         default: break
         }
+    }
+    
+    private func startInteractiveTransition(duration: TimeInterval) {
+        animateTransitionIfNeeded(duration: animationDuration)
+        runningAnimators.forEach({ animator in
+            animator.pauseAnimation()
+        })
+        
+        animationProgress = runningAnimators.map { $0.fractionComplete }
     }
     
 }
@@ -296,7 +331,7 @@ extension DrawerViewController {
 // MARK: - Background Helpers -
 
 extension DrawerViewController {
-
+    
     private func handleOpenBackgroundAnimation() {
         switch self.backgroundType {
         case .withBlur(let style)?:
@@ -334,12 +369,12 @@ extension DrawerViewController {
         let duration: TimeInterval = animated ? animationDuration : 0
         UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: damping, initialSpringVelocity: 0, options: [.beginFromCurrentState], animations: { [weak self] in
             guard let self = self else { return }
-            self.handleOpenBackgroundAnimation()
             self.view.layoutIfNeeded()
             }, completion: { [weak self] _ in
                 completion?()
                 guard let self = self else { return }
-                self.contentViewController?.didChangeOpenState(to: .fullSize)
+                self.roundCorners(with: self.cornerRadius.fullSize)
+                self.contentViewController?.didChangeState(to: .fullSize)
         })
     }
     
@@ -355,14 +390,13 @@ extension DrawerViewController {
         let duration: TimeInterval = animated ? animationDuration : 0
         UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: damping, initialSpringVelocity: 0, options: [.beginFromCurrentState], animations: { [weak self] in
             guard let self = self else { return }
-            self.handleCloseBackgroundAnimation()
             self.view.layoutIfNeeded()
             
             }, completion: { [weak self] _ in
                 completion?()
                 guard let self = self else { return }
-                self.contentViewController?.didChangeOpenState(to: .minimised)
-                self.handleCloseBackgroundAnimation()
+                self.roundCorners(with: self.cornerRadius.minimised)
+                self.contentViewController?.didChangeState(to: .minimised)
         })
     }
     
@@ -375,11 +409,11 @@ extension DrawerViewController {
             }, completion: { [weak self] _ in
                 completion?()
                 guard let self = self else { return }
-                self.contentViewController?.didChangeOpenState(to: .closed)
+                self.contentViewController?.didChangeState(to: .closed)
                 self.destroySelf()
         })
     }
-
+    
 }
 
 // MARK: - Scroll Animations -
@@ -387,12 +421,23 @@ extension DrawerViewController {
 extension DrawerViewController {
     private enum Direction {
         case up, down
+        
+        mutating func reversed() {
+            switch self {
+            case .up:
+                self = .down
+            case .down:
+                self = .up
+            }
+        }
     }
     
     /// Initiate transition if not already running
     private func animateTransitionIfNeeded(duration: TimeInterval) {
-        guard runningAnimators.isEmpty else { return }
-        // SLIDE Animation
+        guard runningAnimators.isEmpty else {
+            direction.reversed()
+            return
+        }
         switch state {
         case .fullSize:
             direction = .down
@@ -405,90 +450,35 @@ extension DrawerViewController {
         animator.addAnimations {
             switch self.state {
             case .fullSize:
+                self.contentViewController?.willChangeState(to: .minimised)
                 self.setupClosedConstraints()
+                self.roundCorners(with: self.cornerRadius.minimised)
+                self.handleCloseBackgroundAnimation()
             case .minimised:
+                self.contentViewController?.willChangeState(to: .fullSize)
                 self.setupOpenConstraints()
+                self.roundCorners(with: self.cornerRadius.fullSize)
+                self.handleOpenBackgroundAnimation()
             }
             self.view.layoutIfNeeded()
         }
         
-        animator.addCompletion { _ in
+        animator.addCompletion { position in
             switch self.direction {
             case .down?:
-                self.closeDrawer(animated: false)
+                self.closeDrawer(animated: self.state == .minimised)
             case .up?:
-                self.openDrawer(animated: false)
+                self.openDrawer(animated: self.state == .fullSize)
             default: break
             }
             
+            self.direction = nil
+            self.animationProgress.removeAll()
             self.runningAnimators.removeAll()
         }
         
         animator.startAnimation()
         runningAnimators.append(animator)
-        
-        // BLUR Animation
-        let timing: UITimingCurveProvider
-        switch state {
-        case .fullSize:
-            timing = UICubicTimingParameters(controlPoint1: CGPoint(x: 0.75, y: 0.1),
-                                             controlPoint2: CGPoint(x: 0.9, y: 0.25))
-        case .minimised:
-            timing = UICubicTimingParameters(controlPoint1: CGPoint(x: 0.1, y: 0.75),
-                                             controlPoint2: CGPoint(x: 0.25, y: 0.9))
-        }
-        let backgroundAnimator = UIViewPropertyAnimator(duration: duration, timingParameters: timing)
-        backgroundAnimator.scrubsLinearly = false
-        backgroundAnimator.addAnimations {
-            switch self.state {
-            case .fullSize:
-                switch self.backgroundType {
-                case .withBlur?:
-                    self.backgroundBlurEffectView?.effect = nil
-                case .withColor(let color)?:
-                    self.backgroundColorView?.backgroundColor = color.withAlphaComponent(0)
-                default: break
-                }
-            case .minimised:
-                switch self.backgroundType {
-                case .withBlur(let style)?:
-                    self.backgroundBlurEffectView?.effect = UIBlurEffect(style: style)
-                case .withColor(let color)?:
-                    self.backgroundColorView?.backgroundColor = color
-                default: break
-                }
-            }
-        }
-        backgroundAnimator.startAnimation()
-        runningAnimators.append(backgroundAnimator)
-    }
-
-    private func startInteractiveTransition(duration: TimeInterval) {
-        animateTransitionIfNeeded(duration: animationDuration)
-        runningAnimators.forEach({ animator in
-            if animator.isReversed {
-                animator.fractionComplete = 1 - animator.fractionComplete
-                animator.isReversed = false
-            }
-            animator.pauseAnimation()
-        })
-    }
-    
-    private func updateInteractiveTransition(fractionComplete: CGFloat) {
-        lastFractionComplete = fractionComplete
-        
-        runningAnimators.forEach({ animator in
-            animator.fractionComplete = fractionComplete
-        })
-    }
-    
-    private func continueInteractiveTransition(isReversed: Bool) {
-        runningAnimators.forEach({ animator in
-            if isReversed {
-                animator.isReversed = !animator.isReversed
-            }
-            animator.continueAnimation(withTimingParameters: nil, durationFactor: 1 - lastFractionComplete)
-        })
     }
     
     // MARK: - Show animation
@@ -504,7 +494,7 @@ extension DrawerViewController {
         }
     }
     
-   
+    
 }
 
 // MARK: - EmbeddableContentDelegate
@@ -529,13 +519,13 @@ extension DrawerViewController: EmbeddableContentDelegate {
         case .changeState(let drawerState):
             switch drawerState {
             case .minimise:
-                contentViewController?.willChangeOpenState(to: .minimised)
+                contentViewController?.willChangeState(to: .minimised)
                 closeDrawer()
             case .fullScreen:
-                contentViewController?.willChangeOpenState(to: .fullSize)
+                contentViewController?.willChangeState(to: .fullSize)
                 openDrawer()
             case .dismiss:
-                contentViewController?.willChangeOpenState(to: .closed)
+                contentViewController?.willChangeState(to: .closed)
                 dismiss()
             }
             
@@ -641,3 +631,16 @@ extension DrawerViewController {
     }
     
 }//swiftlint:disable:this file_length
+
+// MARK: - InstantPanGestureRecognizer
+
+/// A pan gesture that enters into the `began` state on touch down instead of waiting for a touches moved event.
+class InstantPanGestureRecognizer: UIPanGestureRecognizer {
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
+        if (self.state == UIGestureRecognizer.State.began) { return }
+        super.touchesBegan(touches, with: event)
+        self.state = UIGestureRecognizer.State.began
+    }
+    
+}
