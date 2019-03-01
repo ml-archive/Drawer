@@ -73,10 +73,10 @@ class ContentViewController: UIViewController {
 
 extension ContentViewController: Embeddable {
     func willChangeState(to state: EmbeddableState) {
-//        runningAnimators.forEach({
-//            $0.stopAnimation(false)
-//            $0.finishAnimation(at: .current)
-//        })
+        runningAnimators.forEach({
+            $0.stopAnimation(false)
+            $0.finishAnimation(at: .current)
+        })
         let transform: CGAffineTransform
         let collapseAlpha: CGFloat
         let expandAlpha: CGFloat
@@ -85,7 +85,7 @@ extension ContentViewController: Embeddable {
 
         switch state {
         case .minimised:
-                transform = .identity
+            transform = .identity
             collapseAlpha = 0
             expandAlpha = 1
         case .fullSize:
@@ -126,11 +126,13 @@ extension ContentViewController: Embeddable {
             break
         }
         
-        titleAnimator.continueAnimation(withTimingParameters: nil, durationFactor: 0)
+        runningAnimators.forEach({
+            $0.stopAnimation(false)
+            $0.finishAnimation(at: .end)
+        })
     }
     
     func didScroll(with progress: CGFloat, from state: Drawer.State) {
-        print("\(progress) for state \(state)")
         runningAnimators.forEach({$0.pauseAnimation()})
         switch state {
         case .fullSize:
@@ -142,6 +144,8 @@ extension ContentViewController: Embeddable {
             expandButton.alpha = 1 - progress
             titleAnimator.fractionComplete =  progress
         }
+        
+        runningAnimators.forEach({$0.continueAnimation(withTimingParameters: nil, durationFactor: 0)})
     }
     
     func adjustDrawer(with maxHeight: CGFloat, with minHeight: CGFloat) {
