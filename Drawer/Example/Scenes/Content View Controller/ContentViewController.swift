@@ -59,7 +59,6 @@ class ContentViewController: UIViewController {
         view.layer.masksToBounds = false
     }
     
-    
     private func adjustDrawer(with maxHeight: CGFloat, with minHeight: CGFloat) {
         let contentConfiguration = Drawer.ContentConfiguration(duration: animationDuration,
                                                                embeddedFullHeight: maxHeight,

@@ -141,6 +141,7 @@ extension DrawerViewController {
         backgroundBlurEffectView?.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         backgroundBlurEffectView?.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         backgroundBlurEffectView?.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        addTapToMinimise(on: backgroundBlurEffectView!)
     }
     
     /// Adds a UIView to self to act as background
@@ -152,6 +153,19 @@ extension DrawerViewController {
         backgroundColorView?.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         backgroundColorView?.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         backgroundColorView?.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        addTapToMinimise(on: backgroundColorView!)
+    }
+    
+    private func addTapToMinimise(on tapView: UIView) {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(tapMinimise))
+        tap.delegate = self
+        tapView.isUserInteractionEnabled = true
+        tapView.addGestureRecognizer(tap)
+    }
+    
+    @objc private func tapMinimise() {
+        contentViewController?.willChangeState(to: .minimised)
+        closeDrawer()
     }
     
     /// Adds a contents UIViewController's view to self
@@ -369,12 +383,12 @@ extension DrawerViewController {
         let duration: TimeInterval = animated ? animationDuration : 0
         UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: damping, initialSpringVelocity: 0, options: [.beginFromCurrentState], animations: { [weak self] in
             guard let self = self else { return }
+            self.handleOpenBackgroundAnimation()
             self.view.layoutIfNeeded()
             }, completion: { [weak self] _ in
                 completion?()
                 guard let self = self else { return }
                 self.roundCorners(with: self.cornerRadius.fullSize)
-                self.handleOpenBackgroundAnimation()
                 self.contentViewController?.didChangeState(to: .fullSize)
         })
     }
@@ -391,13 +405,13 @@ extension DrawerViewController {
         let duration: TimeInterval = animated ? animationDuration : 0
         UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: damping, initialSpringVelocity: 0, options: [.beginFromCurrentState], animations: { [weak self] in
             guard let self = self else { return }
+            self.handleCloseBackgroundAnimation()
             self.view.layoutIfNeeded()
             
             }, completion: { [weak self] _ in
                 completion?()
                 guard let self = self else { return }
                 self.roundCorners(with: self.cornerRadius.minimised)
-                self.handleCloseBackgroundAnimation()
                 self.contentViewController?.didChangeState(to: .minimised)
         })
     }
@@ -543,7 +557,7 @@ extension DrawerViewController: UIGestureRecognizerDelegate {
             return false
         }
         
-        guard let gesture = gestureRecognizer as? UIPanGestureRecognizer else { return false }
+        guard let gesture = gestureRecognizer as? InstantPanGestureRecognizer else { return false }
         let direction = gesture.velocity(in: view).y
         
         if let scrollableContent = embeddedContentViewController as? EmbeddedScrollable {
@@ -561,7 +575,11 @@ extension DrawerViewController: UIGestureRecognizerDelegate {
             return false
         }
         
-        if touch.view?.superview(of: UITableViewCell.self) != nil && gestureRecognizer is UITapGestureRecognizer {
+        if touch.view?.superview(of: UITableViewCell.self) != nil && gestureRecognizer is InstantPanGestureRecognizer {
+            return false
+        }
+        
+        if touch.view is UIButton && gestureRecognizer is InstantPanGestureRecognizer {
             return false
         }
         
@@ -585,7 +603,18 @@ extension DrawerViewController: TouchPassingWindowDelegate {
             else {
                 return []
         }
-        let views: [UIView] = [embeddedContentViewController.view]
+        var views: [UIView] = [embeddedContentViewController.view]
+        
+        // intercept taps on the background if state is fullSize
+        if backgroundBlurEffectView != nil && state == .fullSize {
+            views.append(backgroundBlurEffectView!)
+        }
+        
+        // intercept taps on the background if state is fullSize
+        if backgroundColorView != nil && state == .fullSize {
+            views.append(backgroundColorView!)
+        }
+        
         return views
     }
     
