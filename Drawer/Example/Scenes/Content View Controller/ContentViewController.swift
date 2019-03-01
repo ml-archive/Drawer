@@ -59,6 +59,22 @@ class ContentViewController: UIViewController {
         view.layer.masksToBounds = false
     }
     
+    
+    private func adjustDrawer(with maxHeight: CGFloat, with minHeight: CGFloat) {
+        let contentConfiguration = Drawer.ContentConfiguration(duration: animationDuration,
+                                                               embeddedFullHeight: maxHeight,
+                                                               state: .minimised,
+                                                               embeddedMinimumHeight: minHeight,
+                                                               cornerRadius: Drawer.ContentConfiguration.CornerRadius(fullSize: 20, minimised: 0),
+                                                               dismissCompleteCallback:
+            { [weak self] in
+                guard let self = self else { return }
+                //TODO: Drawer dismissed.
+        })
+        
+        embedDelegate?.handle(embeddedAction: .layoutUpdated(config: contentConfiguration))
+    }
+    
     // MARK: - Callbacks -
     
     @IBAction func expactTapped(_ sender: Any) {
@@ -146,21 +162,6 @@ extension ContentViewController: Embeddable {
         }
         
         runningAnimators.forEach({$0.continueAnimation(withTimingParameters: nil, durationFactor: 0)})
-    }
-    
-    func adjustDrawer(with maxHeight: CGFloat, with minHeight: CGFloat) {
-        let contentConfiguration = Drawer.ContentConfiguration(duration: animationDuration,
-                                                               embeddedFullHeight: maxHeight,
-                                                               state: .minimised,
-                                                               embeddedMinimumHeight: minHeight,
-                                                               cornerRadius: Drawer.ContentConfiguration.CornerRadius(fullSize: 20, minimised: 0),
-                                                               dismissCompleteCallback:
-            { [weak self] in
-                guard let self = self else { return }
-                //TODO: Drawer dismissed.
-        })
-        
-        embedDelegate?.handle(embeddedAction: .layoutUpdated(config: contentConfiguration))
     }
     
 }

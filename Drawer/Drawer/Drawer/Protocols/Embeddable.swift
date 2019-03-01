@@ -33,13 +33,6 @@ public protocol Embeddable where Self: UIViewController {
     ///    - direction: DrawerViewController.Direction direction of scroll
     ///
     func didScroll(with progress: CGFloat, from state: Drawer.State)
-    /// Use this method to adjust the drawer state. Call this method whenever your Content UIViewController has finished laying out its subviews or has changed its subviews.
-    ///
-    /// - parameters:
-    ///    - maxHeight: Maximum allowed height. A value of 300 will allow the Drawer to expand 300 points from the bottom
-    ///    - minHeight: Minumum allowed height. A value of 100 will allow the Drawer to collapse to 100 points from the bottom
-    ///
-    func adjustDrawer(with maxHeight: CGFloat, with minHeight: CGFloat)
 }
 
 public enum EmbeddableState {

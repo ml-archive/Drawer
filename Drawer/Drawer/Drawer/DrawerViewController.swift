@@ -374,6 +374,7 @@ extension DrawerViewController {
                 completion?()
                 guard let self = self else { return }
                 self.roundCorners(with: self.cornerRadius.fullSize)
+                self.handleOpenBackgroundAnimation()
                 self.contentViewController?.didChangeState(to: .fullSize)
         })
     }
@@ -396,6 +397,7 @@ extension DrawerViewController {
                 completion?()
                 guard let self = self else { return }
                 self.roundCorners(with: self.cornerRadius.minimised)
+                self.handleCloseBackgroundAnimation()
                 self.contentViewController?.didChangeState(to: .minimised)
         })
     }

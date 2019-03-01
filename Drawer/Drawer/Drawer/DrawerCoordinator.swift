@@ -21,9 +21,11 @@ public class DrawerCoordinator {
         self.contentViewController = contentViewController
         self.backgroundViewController = backgroundViewController
         self.drawerBackgroundType = drawerBackgroundType
+        
+        start()
     }
     
-    public func start() {
+    private func start() {
         if backgroundViewController.children.contains(where: { $0 is DrawerViewController }) {
             assertionFailure("\(backgroundViewController) already contains a Drawer. Multiple drawers not supported.")
             return

@@ -17,12 +17,9 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let drawerCoordinator = DrawerCoordinator(contentViewController: contentVC,
+        drawer = DrawerCoordinator(contentViewController: contentVC,
                                                   backgroundViewController: self,
                                                   drawerBackgroundType: .withColor(UIColor.black.withAlphaComponent(0.5)))
-        drawerCoordinator.start()
-        self.drawer = drawerCoordinator
-        
     }
     
 }
