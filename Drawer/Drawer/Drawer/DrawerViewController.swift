@@ -384,11 +384,11 @@ extension DrawerViewController {
         UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: damping, initialSpringVelocity: 0, options: [.beginFromCurrentState], animations: { [weak self] in
             guard let self = self else { return }
             self.handleOpenBackgroundAnimation()
+            self.roundCorners(with: self.cornerRadius.fullSize)
             self.view.layoutIfNeeded()
             }, completion: { [weak self] _ in
                 completion?()
                 guard let self = self else { return }
-                self.roundCorners(with: self.cornerRadius.fullSize)
                 self.contentViewController?.didChangeState(to: .fullSize)
         })
     }
@@ -406,12 +406,12 @@ extension DrawerViewController {
         UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: damping, initialSpringVelocity: 0, options: [.beginFromCurrentState], animations: { [weak self] in
             guard let self = self else { return }
             self.handleCloseBackgroundAnimation()
+            self.roundCorners(with: self.cornerRadius.minimised)
             self.view.layoutIfNeeded()
             
             }, completion: { [weak self] _ in
                 completion?()
                 guard let self = self else { return }
-                self.roundCorners(with: self.cornerRadius.minimised)
                 self.contentViewController?.didChangeState(to: .minimised)
         })
     }
@@ -663,15 +663,3 @@ extension DrawerViewController {
     
 }//swiftlint:disable:this file_length
 
-// MARK: - InstantPanGestureRecognizer
-
-/// A pan gesture that enters into the `began` state on touch down instead of waiting for a touches moved event.
-class InstantPanGestureRecognizer: UIPanGestureRecognizer {
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
-        if (self.state == UIGestureRecognizer.State.began) { return }
-        super.touchesBegan(touches, with: event)
-        self.state = UIGestureRecognizer.State.began
-    }
-    
-}
