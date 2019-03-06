@@ -525,13 +525,11 @@ extension DrawerViewController: EmbeddableContentDelegate {
         
         switch embeddedAction {
         case .layoutUpdated(config: let config):
-            
             if embedConfig == nil {
                 DispatchQueue.main.asyncAfter(deadline: .now()) {
                     self.embedConfig = config
                 }
             }
-            
         case .changeState(let drawerState):
             switch drawerState {
             case .minimise:
@@ -544,7 +542,6 @@ extension DrawerViewController: EmbeddableContentDelegate {
                 contentViewController?.willChangeState(to: .closed)
                 dismiss()
             }
-            
         }
     }
 }
