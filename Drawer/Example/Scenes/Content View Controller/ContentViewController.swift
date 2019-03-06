@@ -76,7 +76,7 @@ class ContentViewController: UIViewController {
     
     // MARK: - Callbacks -
     
-    @IBAction func expactTapped(_ sender: Any) {
+    @IBAction func expandTapped(_ sender: Any) {
         embedDelegate?.handle(embeddedAction: .changeState(to: .fullScreen))
     }
     
