@@ -5,7 +5,7 @@
 
 ## Intro
 
-`Drawer` is a framework that allows you to easily embed an `UIViewController` in a drawer and display it on top of another `UIViewController`.
+`Drawer` is a framework that enables you to easily embed a `UIViewController` in a drawer and display it on top of another `UIViewController`.
 
 ![](drawer_open.gif)
 ![](drawer_close.gif)
@@ -17,37 +17,44 @@
 
 ## 📦 Installation
 
-### Carthage 
+### Carthage
 ~~~bash
 github "nodes-ios/Drawer"
 ~~~
 
 ## 💻 Usage
 
-Requirements: 
+### Requirements
 
-* An `UIViewController` for the drawer to be displayed on top
-* An `UIViewController` to act as the content for the drawer
+* A `UIViewController` for the drawer to be displayed over. This `ViewController` is referred to as the `backgroundViewController` in the following steps
+* A `UIViewController` to act as the content of the drawer. This `ViewController` is referred to as the `contentViewController` in the following steps.
 
-Start by conforming your content `UIViewController` to the `Embeddable` protocol. This exposes several delgate functions to the content `UIViewController` and an instance of `EmbeddableContentDelegate` that can be used to instruct the drawer to perform various tasks.
+### Steps
+
+#### Creating a Drawer
+Start by conforming your `contentViewController` to the `Embeddable` protocol. This exposes several delegate functions to the `contentViewController`.
 
 ```swift
-
 extension ContentViewController: Embeddable {}
-
 ```
 
-After creating the content `UIViewController` inititalise an instance of `DrawerCoordinator` in your background  `UIViewController` to initialise the drawer.
+Furthermore an instance of `EmbeddableContentDelegate` is exposed. This `delegate` can be used to instruct the drawer to perform various tasks by calling the `handle` function on it.
 
-```swift 
+The `handle` function takes an `enum` of type `Drawer.EmbeddedAction` which allows these actions:
 
+- `layoutUpdated(config: Drawer.ContentConfiguration)` to update the layout of your drawer
+- `changeState(to: MovementState)` to show/hide your drawer.
+
+After creating the `contentViewController`, initialize an instance of `DrawerCoordinator` in your `backgroundViewController` to initialize the drawer.
+
+```swift
 let drawer = DrawerCoordinator(contentViewController: contentVC,
 backgroundViewController: self,
 drawerBackgroundType: .withColor(UIColor.black.withAlphaComponent(0.5)))
-
 ```
 
-When your content's views have finished creating and you are ready to display the drawer, create an instance of `Drawer.ContentConfiguration` to set the drawer state and properties and call the `EmbeddableContentDelegate` handle function to update the drawer's layout. 
+#### Displaying a Drawer
+After your content's views have finished creating and you are ready to display the drawer, create an instance of `Drawer.ContentConfiguration` to set the drawer state and properties.
 
 ```swift
 let contentConfiguration = Drawer.ContentConfiguration(duration: animationDuration,
@@ -62,8 +69,24 @@ let contentConfiguration = Drawer.ContentConfiguration(duration: animationDurati
     //TODO: Drawer dismissed.
 })
 
-embedDelegate?.handle(embeddedAction: .layoutUpdated(config: contentConfiguration))
 ```
+
+Communication with the `EmbeddableContentDelegate` is managed by calling the `handle` function, which takes an `enum` of type `Drawer.EmbeddedAction` as a parameter.
+Finally call the `EmbeddableContentDelegate` `handle` function to update the drawer's layout to the new `ContentConfiguration`
+
+ ```swift
+ embedDelegate?.handle(embeddedAction: .layoutUpdated(config: contentConfiguration))
+ ```
+
+ #### Expanding and Collapsing a Drawer
+ To expand and collapse the drawer programatically, call the `EmbeddableContentDelegate` `handle` function with a `changeState` action containing the state which the drawer should transition to.
+
+ ```swift
+embedDelegate?.handle(embeddedAction: .changeState(to: .fullScreen))
+ ```
+
+## Example Project
+To learn more, please refer to the example project contained in this repository.
 
 ## 👥 Credits
 Made with ❤️ at [Nodes](http://nodesagency.com).

@@ -26,7 +26,7 @@
                                 </constraints>
                                 <state key="normal" title="Expand"/>
                                 <connections>
-                                    <action selector="expactTapped:" destination="F2H-rH-Lsj" eventType="touchUpInside" id="QQi-qv-hhK"/>
+                                    <action selector="expandTapped:" destination="F2H-rH-Lsj" eventType="touchUpInside" id="zwQ-Y4-Nde"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iHh-gK-Rag">
