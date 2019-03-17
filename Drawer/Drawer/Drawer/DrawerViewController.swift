@@ -43,7 +43,7 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
     // MARK: States
     
     private var isInitiated: Bool = false
-    private var state: Drawer.State = .minimised
+    private var state: Drawer.State = .minimized
     private var backgroundInteraction: Drawer.ContainerInteraction = .whenMinimised
     
     // MARK: Drawer possible backgrounds
@@ -217,7 +217,7 @@ extension DrawerViewController {
             switch state {
             case .fullSize:
                 direction = fourDecimal(fractionComplete) >= fourDecimal(lastFractionComplete) ? .down : .up
-            case .minimised:
+            case .minimized:
                 fractionComplete *= -1
                 direction = fourDecimal(fractionComplete) >= fourDecimal(lastFractionComplete) ? .up : .down
             }
@@ -259,7 +259,7 @@ extension DrawerViewController {
             
         case .ended:
             // normal animation conditions
-            if state == .fullSize && direction == .down || state == .minimised && direction == .up {
+            if state == .fullSize && direction == .down || state == .minimized && direction == .up {
                 switch state {
                 case .fullSize:
                     switch direction {
@@ -270,7 +270,7 @@ extension DrawerViewController {
                         }
                     default: break
                     }
-                case .minimised:
+                case .minimized:
                     switch direction {
                     case .up?:
                         if runningAnimators[0].isReversed {
@@ -292,7 +292,7 @@ extension DrawerViewController {
                         }
                     default: break
                     }
-                case .minimised:
+                case .minimized:
                     switch direction {
                     case .down?:
                         if !runningAnimators[0].isReversed {
@@ -394,7 +394,7 @@ extension DrawerViewController {
     }
     
     private func closeDrawer(animated: Bool = true, completion: (() -> Void)? = nil) {
-        state = .minimised
+        state = .minimized
         setupClosedConstraints()
         
         //allow for scrolling in ContentVC
@@ -417,7 +417,7 @@ extension DrawerViewController {
     }
     
     private func dismiss(completion: (() -> Void)? = nil) {
-        state = .minimised
+        state = .minimized
         setupDismissConstraints()
         
         UIView.animate(withDuration: animationDuration, delay: 0, usingSpringWithDamping: damping, initialSpringVelocity: 0, options: [.beginFromCurrentState], animations: { [weak self] in
@@ -457,7 +457,7 @@ extension DrawerViewController {
         switch state {
         case .fullSize:
             direction = .down
-        case .minimised:
+        case .minimized:
             direction = .up
         }
         
@@ -470,7 +470,7 @@ extension DrawerViewController {
                 self.setupClosedConstraints()
                 self.roundCorners(with: self.cornerRadius.minimised)
                 self.handleCloseBackgroundAnimation()
-            case .minimised:
+            case .minimized:
                 self.contentViewController?.willChangeState(to: .fullSize)
                 self.setupOpenConstraints()
                 self.roundCorners(with: self.cornerRadius.fullSize)
@@ -482,7 +482,7 @@ extension DrawerViewController {
         animator.addCompletion { position in
             switch self.direction {
             case .down?:
-                self.closeDrawer(animated: self.state == .minimised)
+                self.closeDrawer(animated: self.state == .minimized)
             case .up?:
                 self.openDrawer(animated: self.state == .fullSize)
             default: break
@@ -505,7 +505,7 @@ extension DrawerViewController {
         switch state {
         case .fullSize:
             openDrawer()
-        case .minimised:
+        case .minimized:
             closeDrawer()
         }
     }
