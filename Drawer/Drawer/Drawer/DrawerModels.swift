@@ -35,12 +35,14 @@ public enum Drawer {
         let embeddedFullHeight: CGFloat
         let embeddedMinimumHeight: CGFloat
         let state: Drawer.State
+        let animateStateChange: Bool
         let cornerRadius: ContentConfiguration.CornerRadius
         let dismissCompleteCallback: (() -> Void)?
         
         public init(duration: TimeInterval,
                     embeddedFullHeight: CGFloat,
                     state: Drawer.State,
+                    animateStateChange: Bool,
                     embeddedMinimumHeight: CGFloat,
                     cornerRadius: ContentConfiguration.CornerRadius? = nil,
                     dismissCompleteCallback: (() -> Void)? = nil) {
@@ -48,6 +50,7 @@ public enum Drawer {
             self.embeddedMinimumHeight = embeddedMinimumHeight
             self.embeddedFullHeight = embeddedFullHeight
             self.state = state
+            self.animateStateChange = animateStateChange
             self.cornerRadius = cornerRadius ?? CornerRadius(fullSize: 0, minimised: 0)
             self.dismissCompleteCallback = dismissCompleteCallback
         }

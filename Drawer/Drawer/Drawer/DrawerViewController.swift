@@ -26,9 +26,14 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
             cornerRadius = embedConfig.cornerRadius
             
             //drawer state
-            state = embedConfig.state
+            if state == nil {
+                state = embedConfig.state
+                showAnimation()
+            } else if embedConfig.animateStateChange {
+                state = embedConfig.state
+                showAnimation()
+            }
             
-            showAnimation()
         }
     }
     
@@ -525,10 +530,8 @@ extension DrawerViewController: EmbeddableContentDelegate {
         
         switch embeddedAction {
         case .layoutUpdated(config: let config):
-            if embedConfig == nil {
-                DispatchQueue.main.asyncAfter(deadline: .now()) {
-                    self.embedConfig = config
-                }
+            DispatchQueue.main.asyncAfter(deadline: .now()) {
+                self.embedConfig = config
             }
         case .changeState(let drawerState):
             switch drawerState {

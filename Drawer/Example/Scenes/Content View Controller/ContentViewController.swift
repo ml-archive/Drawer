@@ -45,6 +45,10 @@ class ContentViewController: UIViewController {
             
         }
         adjustDrawer(with: 400, with: 100)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            self.adjustDrawer(with: 600, with: 300)
+        }
 
     }
    
@@ -62,7 +66,7 @@ class ContentViewController: UIViewController {
     private func adjustDrawer(with maxHeight: CGFloat, with minHeight: CGFloat) {
         let contentConfiguration = Drawer.ContentConfiguration(duration: animationDuration,
                                                                embeddedFullHeight: maxHeight,
-                                                               state: .minimized,
+                                                               state: .minimized, animateStateChange: false,
                                                                embeddedMinimumHeight: minHeight,
                                                                cornerRadius: Drawer.ContentConfiguration.CornerRadius(fullSize: 20, minimised: 0),
                                                                dismissCompleteCallback:
