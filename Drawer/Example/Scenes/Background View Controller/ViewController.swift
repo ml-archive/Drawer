@@ -16,10 +16,9 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         drawer = DrawerCoordinator(contentViewController: contentVC,
-                                                  backgroundViewController: self,
-                                                  drawerBackgroundType: .withColor(UIColor.black.withAlphaComponent(0.5)))
+                                   backgroundViewController: self.tabBarController!,
+                                   drawerBackgroundType: .withColor(UIColor.black.withAlphaComponent(0.5)))
     }
     
 }
