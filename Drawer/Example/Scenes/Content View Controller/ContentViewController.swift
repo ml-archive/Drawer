@@ -62,7 +62,7 @@ class ContentViewController: UIViewController {
     private func adjustDrawer(with maxHeight: CGFloat, with minHeight: CGFloat) {
         let contentConfiguration = Drawer.ContentConfiguration(duration: animationDuration,
                                                                embeddedFullHeight: maxHeight,
-                                                               state: .minimised,
+                                                               state: .minimized,
                                                                embeddedMinimumHeight: minHeight,
                                                                cornerRadius: Drawer.ContentConfiguration.CornerRadius(fullSize: 20, minimised: 0),
                                                                dismissCompleteCallback:
@@ -76,7 +76,7 @@ class ContentViewController: UIViewController {
     
     // MARK: - Callbacks -
     
-    @IBAction func expactTapped(_ sender: Any) {
+    @IBAction func expandTapped(_ sender: Any) {
         embedDelegate?.handle(embeddedAction: .changeState(to: .fullScreen))
     }
     
@@ -154,7 +154,7 @@ extension ContentViewController: Embeddable {
             collapseButton.alpha = 1 - progress
             expandButton.alpha = progress
             titleAnimator.fractionComplete = progress
-        case .minimised:
+        case .minimized:
             collapseButton.alpha = progress
             expandButton.alpha = 1 - progress
             titleAnimator.fractionComplete =  progress

@@ -12,7 +12,7 @@ public enum Drawer {
     
     public enum State: Int {
         case fullSize
-        case minimised
+        case minimized
     }
     
     internal enum ContainerInteraction: Int {
