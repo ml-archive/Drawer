@@ -583,8 +583,34 @@ extension DrawerViewController: UIGestureRecognizerDelegate {
             return false
         }
         
+        // if the touch view is not the content's view, then we don't handle the touch in some cases
+        if touch.view != contentViewController?.view && gestureRecognizer is InstantPanGestureRecognizer {
+            
+            // check if the user meant to tap a button and near missed it
+            if let touchView = touch.view, touchView.containsButtonsInSubviews() {
+                return !touchView.isTouchAMissedUIButtonTouch(gesture: gestureRecognizer)
+                
+            // check if the scrollview can scroll, then allow gesture based on that
+            } else if let scrollView = touch.view as? UIScrollView,
+                self.state == .fullSize {
+
+                let scrollViewHeight = scrollView.frame.size.height
+                let scrollContentSizeHeight = scrollView.contentSize.height
+                
+                if scrollViewHeight >= scrollContentSizeHeight {
+                    return true
+                } else {
+                    return false
+                }
+            
+            }
+            
+            return true
+        }
+        
         return true
     }
+    
 }
 
 // MARK: - TouchPassingWindowDelegate
