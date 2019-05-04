@@ -204,8 +204,8 @@ extension DrawerViewController {
 extension DrawerViewController {
     
     private func setupGestureRecognizers() {
-        do {
-            let gr = InstantPanGestureRecognizer.init(target: self, action: #selector(handlePan))
+        do { 
+            let gr = UIPanGestureRecognizer.init(target: self, action: #selector(handlePan))
             gr.delegate = self
             contentViewController?.view.addGestureRecognizer(gr)
         }

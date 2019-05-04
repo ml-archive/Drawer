@@ -45,11 +45,6 @@ class ContentViewController: UIViewController {
             
         }
         adjustDrawer(with: 400, with: 100)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-            self.adjustDrawer(with: 600, with: 300)
-        }
-
     }
    
     override func viewDidLayoutSubviews() {
