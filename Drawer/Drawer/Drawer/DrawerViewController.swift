@@ -199,10 +199,25 @@ extension DrawerViewController {
 extension DrawerViewController {
     
     private func setupGestureRecognizers() {
-        do { 
-            let gr = UIPanGestureRecognizer.init(target: self, action: #selector(handlePan))
-            gr.delegate = self
-            contentViewController?.view.addGestureRecognizer(gr)
+
+        func makePanGestureRecognizer(addToView view: UIView) {
+            let contentPan = UIPanGestureRecognizer.init(target: self, action: #selector(handlePan))
+            contentPan.delegate = self
+            view.addGestureRecognizer(contentPan)
+        }
+
+        do {
+            if let contentViewController = contentViewController {
+                makePanGestureRecognizer(addToView: contentViewController.view)
+            }
+
+            if let backgroundColorView = backgroundColorView {
+                makePanGestureRecognizer(addToView: backgroundColorView)
+            }
+
+            if let backgroundBlurEffectView = backgroundBlurEffectView {
+                makePanGestureRecognizer(addToView: backgroundBlurEffectView)
+            }
         }
     }
 
