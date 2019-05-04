@@ -26,13 +26,8 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
             cornerRadius = embedConfig.cornerRadius
             
             //drawer state
-            if state == nil {
-                state = embedConfig.state
-                showAnimation()
-            } else if embedConfig.animateStateChange {
-                state = embedConfig.state
-                showAnimation()
-            }
+            state = embedConfig.state
+            showAnimation()
             
         }
     }
@@ -557,7 +552,7 @@ extension DrawerViewController: UIGestureRecognizerDelegate {
             return false
         }
         
-        guard let gesture = gestureRecognizer as? InstantPanGestureRecognizer else { return false }
+        guard let gesture = gestureRecognizer as? UIPanGestureRecognizer else { return false }
         let direction = gesture.velocity(in: view).y
         
         if let scrollableContent = embeddedContentViewController as? EmbeddedScrollable {
@@ -575,23 +570,19 @@ extension DrawerViewController: UIGestureRecognizerDelegate {
             return false
         }
         
-        if touch.view?.superview(of: UITableViewCell.self) != nil && gestureRecognizer is InstantPanGestureRecognizer {
+        if touch.view?.superview(of: UITableViewCell.self) != nil && gestureRecognizer is UIPanGestureRecognizer {
             return false
         }
         
-        if touch.view is UIButton && gestureRecognizer is InstantPanGestureRecognizer {
+        if touch.view is UIButton && gestureRecognizer is UIPanGestureRecognizer {
             return false
         }
         
         // if the touch view is not the content's view, then we don't handle the touch in some cases
-        if touch.view != contentViewController?.view && gestureRecognizer is InstantPanGestureRecognizer {
-            
-            // check if the user meant to tap a button and near missed it
-            if let touchView = touch.view, touchView.containsButtonsInSubviews() {
-                return !touchView.isTouchAMissedUIButtonTouch(gesture: gestureRecognizer)
-                
+        if touch.view != contentViewController?.view && gestureRecognizer is UIPanGestureRecognizer {
+
             // check if the scrollview can scroll, then allow gesture based on that
-            } else if let scrollView = touch.view as? UIScrollView,
+            if let scrollView = touch.view as? UIScrollView,
                 self.state == .fullSize {
 
                 let scrollViewHeight = scrollView.frame.size.height
@@ -602,7 +593,7 @@ extension DrawerViewController: UIGestureRecognizerDelegate {
                 } else {
                     return false
                 }
-            
+
             }
             
             return true
