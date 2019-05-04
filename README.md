@@ -40,7 +40,7 @@ extension ContentViewController: Embeddable {}
 
 Furthermore an instance of `EmbeddableContentDelegate` is exposed. This `delegate` can be used to instruct the drawer to perform various tasks by calling the `handle` function on it.
 
-The `handle` function takes an `enum` of type `Drawer.EmbeddedAction` which allows these actions:
+The `handle` function takes an `enum` of type `Drawer.Action` which allows these actions:
 
 - `layoutUpdated(config: Drawer.ContentConfiguration)` to update the layout of your drawer
 - `changeState(to: MovementState)` to show/hide your drawer.
@@ -57,25 +57,26 @@ drawerBackgroundType: .withColor(UIColor.black.withAlphaComponent(0.5)))
 After your content's views have finished creating and you are ready to display the drawer, create an instance of `Drawer.ContentConfiguration` to set the drawer state and properties.
 
 ```swift
-let contentConfiguration = Drawer.ContentConfiguration(duration: animationDuration,
-                                                        embeddedFullHeight: maxHeight,
-                                                        state: .minimised,
-                                                        embeddedMinimumHeight: minHeight,
-                                                        cornerRadius: Drawer.ContentConfiguration.CornerRadius(fullSize: 20,
-                                                                                                                minimised: 0),
-                                                        dismissCompleteCallback:
-{ [weak self] in
-    guard let self = self else { return }
-    //TODO: Drawer dismissed.
-})
+
+let options: [Drawer.Configuration.Key : Any] = [
+.animationDuration: 0.5,
+.fullHeight: maxHeight,
+.minimunHeight: minHeight,
+.initialState: Drawer.State.minimized,
+.cornerRadius: Drawer.Configuration.CornerRadius(fullSize: 20,
+minimized: 0)
+]
+
+let contentConfiguration = Drawer.Configuration(options: options,
+dismissCompleteCallback: nil)
 
 ```
 
-Communication with the `EmbeddableContentDelegate` is managed by calling the `handle` function, which takes an `enum` of type `Drawer.EmbeddedAction` as a parameter.
+Communication with the `EmbeddableContentDelegate` is managed by calling the `handle` function, which takes an `enum` of type `Drawer.Action` as a parameter.
 Finally call the `EmbeddableContentDelegate` `handle` function to update the drawer's layout to the new `ContentConfiguration`
 
  ```swift
- embedDelegate?.handle(embeddedAction: .layoutUpdated(config: contentConfiguration))
+ embedDelegate?.handle(action: .layoutUpdated(config: contentConfiguration))
  ```
 
  #### Expanding and Collapsing a Drawer

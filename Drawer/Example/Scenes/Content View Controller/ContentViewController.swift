@@ -59,28 +59,30 @@ class ContentViewController: UIViewController {
     }
     
     private func adjustDrawer(with maxHeight: CGFloat, with minHeight: CGFloat) {
-        let contentConfiguration = Drawer.ContentConfiguration(duration: animationDuration,
-                                                               embeddedFullHeight: maxHeight,
-                                                               state: .minimized, animateStateChange: false,
-                                                               embeddedMinimumHeight: minHeight,
-                                                               cornerRadius: Drawer.ContentConfiguration.CornerRadius(fullSize: 20, minimised: 0),
-                                                               dismissCompleteCallback:
-            { [weak self] in
-                guard let self = self else { return }
-                //TODO: Drawer dismissed.
-        })
+
+        let options: [Drawer.Configuration.Key : Any] = [
+            .animationDuration: 0.5,
+            .fullHeight: maxHeight,
+            .minimunHeight: minHeight,
+            .initialState: Drawer.State.minimized,
+            .cornerRadius: Drawer.Configuration.CornerRadius(fullSize: 20,
+                                                             minimized: 0)
+        ]
+
+        let contentConfiguration = Drawer.Configuration(options: options,
+                                                        dismissCompleteCallback: nil)
         
-        embedDelegate?.handle(embeddedAction: .layoutUpdated(config: contentConfiguration))
+        embedDelegate?.handle(action: .layoutUpdated(config: contentConfiguration))
     }
     
     // MARK: - Callbacks -
     
     @IBAction func expandTapped(_ sender: Any) {
-        embedDelegate?.handle(embeddedAction: .changeState(to: .fullScreen))
+        embedDelegate?.handle(action: .changeState(to: .fullScreen))
     }
     
     @IBAction func collapseTapped(_ sender: Any) {
-        embedDelegate?.handle(embeddedAction: .changeState(to: .minimise))
+        embedDelegate?.handle(action: .changeState(to: .minimize))
     }
     
 }

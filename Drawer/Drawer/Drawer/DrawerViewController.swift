@@ -15,7 +15,7 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
     
     // MARK: Configuration
     
-    private var embedConfig: Drawer.ContentConfiguration! {
+    private var embedConfig: Drawer.Configuration! {
         didSet {
             animationDuration = embedConfig.duration
             
@@ -38,7 +38,7 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
     private var bottomAnchorContent: NSLayoutConstraint!
     private var ownMaxHeight: CGFloat = 0
     private var ownMinHeight: CGFloat = 0
-    private var cornerRadius: Drawer.ContentConfiguration.CornerRadius!
+    private var cornerRadius: Drawer.Configuration.CornerRadius!
     
     // MARK: States
     
@@ -521,16 +521,16 @@ extension DrawerViewController: EmbeddableContentDelegate {
         return UIScreen.main.bounds.height
     }
     
-    public func handle(embeddedAction: Drawer.EmbeddedAction) {
+    public func handle(action: Drawer.Action) {
         
-        switch embeddedAction {
+        switch action {
         case .layoutUpdated(config: let config):
             DispatchQueue.main.asyncAfter(deadline: .now()) {
                 self.embedConfig = config
             }
         case .changeState(let drawerState):
             switch drawerState {
-            case .minimise:
+            case .minimize:
                 contentViewController?.willChangeState(to: .minimised)
                 closeDrawer()
             case .fullScreen:
