@@ -37,6 +37,6 @@ public protocol Embeddable where Self: UIViewController {
 
 public enum EmbeddableState {
     case fullSize
-    case minimised
+    case minimized
     case closed
 }

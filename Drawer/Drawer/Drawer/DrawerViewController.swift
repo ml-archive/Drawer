@@ -157,14 +157,14 @@ extension DrawerViewController {
     }
     
     private func addTapToMinimise(on tapView: UIView) {
-        let tap = UITapGestureRecognizer(target: self, action: #selector(tapMinimise))
+        let tap = UITapGestureRecognizer(target: self, action: #selector(tapMinimize))
         tap.delegate = self
         tapView.isUserInteractionEnabled = true
         tapView.addGestureRecognizer(tap)
     }
     
-    @objc private func tapMinimise() {
-        contentViewController?.willChangeState(to: .minimised)
+    @objc private func tapMinimize() {
+        contentViewController?.willChangeState(to: .minimized)
         closeDrawer()
     }
     
@@ -202,6 +202,12 @@ extension DrawerViewController {
 
         func makePanGestureRecognizer(addToView view: UIView) {
             let contentPan = UIPanGestureRecognizer.init(target: self, action: #selector(handlePan))
+            contentPan.delegate = self
+            view.addGestureRecognizer(contentPan)
+        }
+
+        func makeTapGestureRecognizer(addToView view: UIView) {
+            let contentPan = UITapGestureRecognizer.init(target: self, action: #selector(tapMinimize))
             contentPan.delegate = self
             view.addGestureRecognizer(contentPan)
         }
@@ -281,7 +287,7 @@ extension DrawerViewController {
                     case .down?:
                         if runningAnimators[0].isReversed {
                             runningAnimators.forEach { $0.isReversed = !$0.isReversed } // will Cancel reverse
-                            contentViewController?.willChangeState(to: .minimised)
+                            contentViewController?.willChangeState(to: .minimized)
                         }
                     default: break
                     }
@@ -312,7 +318,7 @@ extension DrawerViewController {
                     case .down?:
                         if !runningAnimators[0].isReversed {
                             runningAnimators.forEach { $0.isReversed = !$0.isReversed } //will reverse
-                            contentViewController?.willChangeState(to: .minimised)
+                            contentViewController?.willChangeState(to: .minimized)
                         }
                     default: break
                     }
@@ -427,7 +433,7 @@ extension DrawerViewController {
             }, completion: { [weak self] _ in
                 completion?()
                 guard let self = self else { return }
-                self.contentViewController?.didChangeState(to: .minimised)
+                self.contentViewController?.didChangeState(to: .minimized)
         })
     }
     
@@ -481,7 +487,7 @@ extension DrawerViewController {
         animator.addAnimations {
             switch self.state {
             case .fullSize:
-                self.contentViewController?.willChangeState(to: .minimised)
+                self.contentViewController?.willChangeState(to: .minimized)
                 self.setupClosedConstraints()
                 self.roundCorners(with: self.cornerRadius.minimised)
                 self.handleCloseBackgroundAnimation()
@@ -546,7 +552,7 @@ extension DrawerViewController: EmbeddableContentDelegate {
         case .changeState(let drawerState):
             switch drawerState {
             case .minimize:
-                contentViewController?.willChangeState(to: .minimised)
+                contentViewController?.willChangeState(to: .minimized)
                 closeDrawer()
             case .fullScreen:
                 contentViewController?.willChangeState(to: .fullSize)

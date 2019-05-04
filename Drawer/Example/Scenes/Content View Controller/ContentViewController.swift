@@ -100,7 +100,7 @@ extension ContentViewController: Embeddable {
         guard runningAnimators.isEmpty else { return }
 
         switch state {
-        case .minimised:
+        case .minimized:
             transform = .identity
             collapseAlpha = 0
             expandAlpha = 1
@@ -132,7 +132,7 @@ extension ContentViewController: Embeddable {
     
     func didChangeState(to state: EmbeddableState) {
         switch state {
-        case .minimised:
+        case .minimized:
             collapseButton.alpha = 0
             expandButton.alpha = 1
         case .fullSize:
