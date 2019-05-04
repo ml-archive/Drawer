@@ -427,7 +427,7 @@ extension DrawerViewController {
         UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: damping, initialSpringVelocity: 0, options: [.beginFromCurrentState], animations: { [weak self] in
             guard let self = self else { return }
             self.handleCloseBackgroundAnimation()
-            self.roundCorners(with: self.cornerRadius.minimised)
+            self.roundCorners(with: self.cornerRadius.minimized)
             self.view.layoutIfNeeded()
             
             }, completion: { [weak self] _ in
@@ -489,7 +489,7 @@ extension DrawerViewController {
             case .fullSize:
                 self.contentViewController?.willChangeState(to: .minimized)
                 self.setupClosedConstraints()
-                self.roundCorners(with: self.cornerRadius.minimised)
+                self.roundCorners(with: self.cornerRadius.minimized)
                 self.handleCloseBackgroundAnimation()
             case .minimized:
                 self.contentViewController?.willChangeState(to: .fullSize)

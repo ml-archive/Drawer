@@ -109,11 +109,11 @@ public enum Drawer {
         
         public struct CornerRadius {
             let fullSize: CGFloat
-            let minimised: CGFloat
+            let minimized: CGFloat
             
             public init(fullSize: CGFloat, minimized: CGFloat) {
                 self.fullSize = fullSize
-                self.minimised = minimized
+                self.minimized = minimized
             }
         }
     }
