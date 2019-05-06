@@ -1,6 +1,6 @@
 [![Carthage Compatible](https://img.shields.io/badge/carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 ![Plaforms](https://img.shields.io/badge/platforms-iOS%20-lightgrey.svg)
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/nodes-ios/Reachability-UI/blob/master/LICENSE)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/nodes-ios/Drawer/blob/master/LICENSE)
 [![CircleCI](https://circleci.com/gh/nodes-ios/Drawer.svg?style=shield)](https://circleci.com/gh/nodes-ios/Drawer)
 
 ## Intro
@@ -49,8 +49,8 @@ After creating the `contentViewController`, initialize an instance of `DrawerCoo
 
 ```swift
 let drawer = DrawerCoordinator(contentViewController: contentVC,
-backgroundViewController: self,
-drawerBackgroundType: .withColor(UIColor.black.withAlphaComponent(0.5)))
+                               backgroundViewController: self,
+                               drawerBackgroundType: .withColor(UIColor.black.withAlphaComponent(0.5)))
 ```
 
 #### Displaying a Drawer
