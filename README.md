@@ -42,7 +42,7 @@ Furthermore an instance of `EmbeddableContentDelegate` is exposed. This `delegat
 
 The `handle` function takes an `enum` of type `Drawer.Action` which allows these actions:
 
-- `layoutUpdated(config: Drawer.ContentConfiguration)` to update the layout of your drawer
+- `layoutUpdated(config: Drawer.Configuration)` to update the layout of your drawer
 - `changeState(to: MovementState)` to show/hide your drawer.
 
 After creating the `contentViewController`, initialize an instance of `DrawerCoordinator` in your `backgroundViewController` to initialize the drawer.
@@ -54,7 +54,7 @@ let drawer = DrawerCoordinator(contentViewController: contentVC,
 ```
 
 #### Displaying a Drawer
-After your content's views have finished creating and you are ready to display the drawer, create an instance of `Drawer.ContentConfiguration` to set the drawer state and properties.
+After your content's views have finished creating and you are ready to display the drawer, create an instance of `Drawer.Configuration` to set the drawer state and properties.
 
 ```swift
 
@@ -73,7 +73,7 @@ let contentConfiguration = Drawer.Configuration(options: options,
 ```
 
 Communication with the `EmbeddableContentDelegate` is managed by calling the `handle` function, which takes an `enum` of type `Drawer.Action` as a parameter.
-Finally call the `EmbeddableContentDelegate` `handle` function to update the drawer's layout to the new `ContentConfiguration`
+Finally call the `EmbeddableContentDelegate` `handle` function to update the drawer's layout to the new `Configuration`
 
  ```swift
  embedDelegate?.handle(action: .layoutUpdated(config: contentConfiguration))
