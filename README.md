@@ -64,11 +64,11 @@ let options: [Drawer.Configuration.Key : Any] = [
 .minimunHeight: minHeight,
 .initialState: Drawer.State.minimized,
 .cornerRadius: Drawer.Configuration.CornerRadius(fullSize: 20,
-minimized: 0)
+                                                 minimized: 0)
 ]
 
 let contentConfiguration = Drawer.Configuration(options: options,
-dismissCompleteCallback: nil)
+                                                dismissCompleteCallback: nil)
 
 ```
 
@@ -83,7 +83,7 @@ Finally call the `EmbeddableContentDelegate` `handle` function to update the dra
  To expand and collapse the drawer programatically, call the `EmbeddableContentDelegate` `handle` function with a `changeState` action containing the state which the drawer should transition to.
 
  ```swift
-embedDelegate?.handle(embeddedAction: .changeState(to: .fullScreen))
+embedDelegate?.handle(action: .changeState(to: .fullScreen))
  ```
 
 ## Example Project
