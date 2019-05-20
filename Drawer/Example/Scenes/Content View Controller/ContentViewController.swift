@@ -63,7 +63,7 @@ class ContentViewController: UIViewController {
         let options: [Drawer.Configuration.Key : Any] = [
             .animationDuration: 0.5,
             .fullHeight: maxHeight,
-            .minimunHeight: minHeight,
+            .minimumHeight: minHeight,
             .initialState: Drawer.State.minimized,
             .cornerRadius: Drawer.Configuration.CornerRadius(fullSize: 20,
                                                              minimized: 0)

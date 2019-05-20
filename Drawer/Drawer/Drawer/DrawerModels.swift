@@ -52,7 +52,7 @@ public enum Drawer {
          - .fullHeight: CGFloat
          -- default value is 300
 
-         - .minimunHeight: CGFloat
+         - .minimumHeight: CGFloat
          -- default value is 100
 
          - .initialState: Drawer.State
@@ -64,45 +64,21 @@ public enum Drawer {
          */
         public init(options: [Drawer.Configuration.Key: Any],
                     dismissCompleteCallback: (() -> Void)? = nil) {
-
-            if let duration = options[.animationDuration] as? TimeInterval {
-                self.duration = duration
-            } else {
-                self.duration = 0.3
-            }
-
-            if let fullHeight = options[.fullHeight] as? CGFloat {
-                self.embeddedFullHeight = fullHeight
-            } else {
-                self.embeddedFullHeight = 300
-            }
-
-            if let minimunHeight = options[.minimunHeight] as? CGFloat {
-                self.embeddedMinimumHeight = minimunHeight
-            } else {
-                self.embeddedMinimumHeight = 100
-            }
-
-            if let state = options[.initialState] as? Drawer.State {
-                self.state = state
-            } else {
-                self.state = .minimized
-            }
-
-            if let cornerRadius = options[.cornerRadius] as? Configuration.CornerRadius {
-                self.cornerRadius = cornerRadius
-            } else {
-                self.cornerRadius = Configuration.CornerRadius(fullSize: 0,
-                                                                      minimized: 0)
-            }
-
+            
+            duration = options[.animationDuration] as? TimeInterval ?? 0.3
+            embeddedFullHeight = options[.fullHeight] as? CGFloat ?? 300
+            embeddedMinimumHeight = options[.minimumHeight] as? CGFloat ?? 100
+            state = options[.initialState] as? Drawer.State  ?? .minimized
+            cornerRadius = options[.cornerRadius] as? Configuration.CornerRadius ?? Configuration.CornerRadius(fullSize: 0, minimized: 0)
+            
+            
             self.dismissCompleteCallback = dismissCompleteCallback
         }
-
+        
         public enum Key: String, CaseIterable {
             case animationDuration
             case fullHeight
-            case minimunHeight
+            case minimumHeight
             case initialState
             case cornerRadius
         }
