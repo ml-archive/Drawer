@@ -15,7 +15,7 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
     
     // MARK: Configuration
     
-    private var embedConfig: Drawer.ContentConfiguration! {
+    private var embedConfig: Drawer.Configuration! {
         didSet {
             animationDuration = embedConfig.duration
             
@@ -26,13 +26,8 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
             cornerRadius = embedConfig.cornerRadius
             
             //drawer state
-            if state == nil {
-                state = embedConfig.state
-                showAnimation()
-            } else if embedConfig.animateStateChange {
-                state = embedConfig.state
-                showAnimation()
-            }
+            state = embedConfig.state
+            showAnimation()
             
         }
     }
@@ -43,7 +38,7 @@ public class DrawerViewController: UIViewController { //swiftlint:disable:this t
     private var bottomAnchorContent: NSLayoutConstraint!
     private var ownMaxHeight: CGFloat = 0
     private var ownMinHeight: CGFloat = 0
-    private var cornerRadius: Drawer.ContentConfiguration.CornerRadius!
+    private var cornerRadius: Drawer.Configuration.CornerRadius!
     
     // MARK: States
     
@@ -162,14 +157,14 @@ extension DrawerViewController {
     }
     
     private func addTapToMinimise(on tapView: UIView) {
-        let tap = UITapGestureRecognizer(target: self, action: #selector(tapMinimise))
+        let tap = UITapGestureRecognizer(target: self, action: #selector(tapMinimize))
         tap.delegate = self
         tapView.isUserInteractionEnabled = true
         tapView.addGestureRecognizer(tap)
     }
     
-    @objc private func tapMinimise() {
-        contentViewController?.willChangeState(to: .minimised)
+    @objc private func tapMinimize() {
+        contentViewController?.willChangeState(to: .minimized)
         closeDrawer()
     }
     
@@ -204,10 +199,31 @@ extension DrawerViewController {
 extension DrawerViewController {
     
     private func setupGestureRecognizers() {
+
+        func makePanGestureRecognizer(addToView view: UIView) {
+            let contentPan = UIPanGestureRecognizer.init(target: self, action: #selector(handlePan))
+            contentPan.delegate = self
+            view.addGestureRecognizer(contentPan)
+        }
+
+        func makeTapGestureRecognizer(addToView view: UIView) {
+            let contentPan = UITapGestureRecognizer.init(target: self, action: #selector(tapMinimize))
+            contentPan.delegate = self
+            view.addGestureRecognizer(contentPan)
+        }
+
         do {
-            let gr = InstantPanGestureRecognizer.init(target: self, action: #selector(handlePan))
-            gr.delegate = self
-            contentViewController?.view.addGestureRecognizer(gr)
+            if let contentViewController = contentViewController {
+                makePanGestureRecognizer(addToView: contentViewController.view)
+            }
+
+            if let backgroundColorView = backgroundColorView {
+                makePanGestureRecognizer(addToView: backgroundColorView)
+            }
+
+            if let backgroundBlurEffectView = backgroundBlurEffectView {
+                makePanGestureRecognizer(addToView: backgroundBlurEffectView)
+            }
         }
     }
 
@@ -271,7 +287,7 @@ extension DrawerViewController {
                     case .down?:
                         if runningAnimators[0].isReversed {
                             runningAnimators.forEach { $0.isReversed = !$0.isReversed } // will Cancel reverse
-                            contentViewController?.willChangeState(to: .minimised)
+                            contentViewController?.willChangeState(to: .minimized)
                         }
                     default: break
                     }
@@ -302,7 +318,7 @@ extension DrawerViewController {
                     case .down?:
                         if !runningAnimators[0].isReversed {
                             runningAnimators.forEach { $0.isReversed = !$0.isReversed } //will reverse
-                            contentViewController?.willChangeState(to: .minimised)
+                            contentViewController?.willChangeState(to: .minimized)
                         }
                     default: break
                     }
@@ -411,13 +427,13 @@ extension DrawerViewController {
         UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: damping, initialSpringVelocity: 0, options: [.beginFromCurrentState], animations: { [weak self] in
             guard let self = self else { return }
             self.handleCloseBackgroundAnimation()
-            self.roundCorners(with: self.cornerRadius.minimised)
+            self.roundCorners(with: self.cornerRadius.minimized)
             self.view.layoutIfNeeded()
             
             }, completion: { [weak self] _ in
                 completion?()
                 guard let self = self else { return }
-                self.contentViewController?.didChangeState(to: .minimised)
+                self.contentViewController?.didChangeState(to: .minimized)
         })
     }
     
@@ -471,9 +487,9 @@ extension DrawerViewController {
         animator.addAnimations {
             switch self.state {
             case .fullSize:
-                self.contentViewController?.willChangeState(to: .minimised)
+                self.contentViewController?.willChangeState(to: .minimized)
                 self.setupClosedConstraints()
-                self.roundCorners(with: self.cornerRadius.minimised)
+                self.roundCorners(with: self.cornerRadius.minimized)
                 self.handleCloseBackgroundAnimation()
             case .minimized:
                 self.contentViewController?.willChangeState(to: .fullSize)
@@ -526,17 +542,17 @@ extension DrawerViewController: EmbeddableContentDelegate {
         return UIScreen.main.bounds.height
     }
     
-    public func handle(embeddedAction: Drawer.EmbeddedAction) {
+    public func handle(action: Drawer.Action) {
         
-        switch embeddedAction {
+        switch action {
         case .layoutUpdated(config: let config):
             DispatchQueue.main.asyncAfter(deadline: .now()) {
                 self.embedConfig = config
             }
         case .changeState(let drawerState):
             switch drawerState {
-            case .minimise:
-                contentViewController?.willChangeState(to: .minimised)
+            case .minimize:
+                contentViewController?.willChangeState(to: .minimized)
                 closeDrawer()
             case .fullScreen:
                 contentViewController?.willChangeState(to: .fullSize)
@@ -557,7 +573,7 @@ extension DrawerViewController: UIGestureRecognizerDelegate {
             return false
         }
         
-        guard let gesture = gestureRecognizer as? InstantPanGestureRecognizer else { return false }
+        guard let gesture = gestureRecognizer as? UIPanGestureRecognizer else { return false }
         let direction = gesture.velocity(in: view).y
         
         if let scrollableContent = embeddedContentViewController as? EmbeddedScrollable {
@@ -575,23 +591,19 @@ extension DrawerViewController: UIGestureRecognizerDelegate {
             return false
         }
         
-        if touch.view?.superview(of: UITableViewCell.self) != nil && gestureRecognizer is InstantPanGestureRecognizer {
+        if touch.view?.superview(of: UITableViewCell.self) != nil && gestureRecognizer is UIPanGestureRecognizer {
             return false
         }
         
-        if touch.view is UIButton && gestureRecognizer is InstantPanGestureRecognizer {
+        if touch.view is UIButton && gestureRecognizer is UIPanGestureRecognizer {
             return false
         }
         
         // if the touch view is not the content's view, then we don't handle the touch in some cases
-        if touch.view != contentViewController?.view && gestureRecognizer is InstantPanGestureRecognizer {
-            
-            // check if the user meant to tap a button and near missed it
-            if let touchView = touch.view, touchView.containsButtonsInSubviews() {
-                return !touchView.isTouchAMissedUIButtonTouch(gesture: gestureRecognizer)
-                
+        if touch.view != contentViewController?.view && gestureRecognizer is UIPanGestureRecognizer {
+
             // check if the scrollview can scroll, then allow gesture based on that
-            } else if let scrollView = touch.view as? UIScrollView,
+            if let scrollView = touch.view as? UIScrollView,
                 self.state == .fullSize {
 
                 let scrollViewHeight = scrollView.frame.size.height
@@ -602,7 +614,7 @@ extension DrawerViewController: UIGestureRecognizerDelegate {
                 } else {
                     return false
                 }
-            
+
             }
             
             return true
