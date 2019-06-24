@@ -27,6 +27,6 @@ let package = Package(
         .testTarget(
             name: "DrawerTests",
             dependencies: ["Drawer"],
-            path: "DrawerTests"),
+            path: "Drawer/DrawerTests"),
     ]
 )
