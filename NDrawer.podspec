@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target = '11.0'
 
-  s.source_files = 'Sources/Drawer/*'
+  s.source_files = 'Drawer/Drawer/**/*.swift'
   
   s.swift_version = '5'
   s.pod_target_xcconfig = { 'SWIFT_VERSION' => '5' }
