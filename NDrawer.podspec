@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name        = 'NDrawer'
-  s.version     = '1.0.1'
+  s.version     = '1.0.4'
   s.summary     = 'Drawer is a framework that enables you to easily embed a UIViewController in a drawer and display it on top of another UIViewController.'
   s.homepage    = 'https://github.com/nodes-ios/Drawer'
   s.author      = { "Nodes Agency - iOS" => "ios@nodes.dk" }
