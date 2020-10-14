@@ -22,6 +22,11 @@
 github "nodes-ios/Drawer"
 ~~~
 
+### Cocoapods
+~~~bash
+pod 'NDrawer'
+~~~
+
 ## 💻 Usage
 
 ### Requirements
