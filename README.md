@@ -1,3 +1,6 @@
+### This library has been deprecated and the repo has been archived. 
+### The code is still here and you can still clone it, however the library will not receive any more updates or support.
+
 [![Carthage Compatible](https://img.shields.io/badge/carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 ![Plaforms](https://img.shields.io/badge/platforms-iOS%20-lightgrey.svg)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/nodes-ios/Drawer/blob/master/LICENSE)
